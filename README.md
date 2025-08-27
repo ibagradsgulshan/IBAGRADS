@@ -466,15 +466,17 @@
         function populateSubjectDropdowns() {
             [subjectSelect, editSubject].forEach(selectEl => {
                 const currentValue = selectEl.value;
-                selectEl.innerHTML = '<option value="" disabled>Select a Subject</option>';
+                selectEl.innerHTML = '<option value="" disabled selected>Select a Subject</option>';
                 allSubjects.forEach(subject => {
                     const option = document.createElement('option');
                     option.value = subject;
                     option.textContent = subject;
                     selectEl.appendChild(option);
                 });
-                selectEl.value = currentValue; // Preserve selection if possible
-                 if (!selectEl.value) { // If previous value is not in new list
+                // Try to restore previous selection, otherwise default to placeholder
+                if (allSubjects.includes(currentValue)) {
+                    selectEl.value = currentValue;
+                } else {
                     selectEl.selectedIndex = 0;
                 }
             });
@@ -485,15 +487,19 @@
             const subjectsDocRef = doc(db, `artifacts/${appId}/users/${userId}/appData/subjects`);
             try {
                 const docSnap = await getDoc(subjectsDocRef);
-                if (docSnap.exists()) {
+                if (docSnap.exists() && docSnap.data().list) {
                     allSubjects = JSON.parse(docSnap.data().list);
                 } else {
+                    // Default subjects if none exist in Firestore
                     allSubjects = ["Physics", "Chemistry", "Maths", "English", "Biology", "Urdu"];
                     await saveSubjects(); 
                 }
                 populateSubjectDropdowns();
             } catch (e) {
                 console.error("Error loading subjects: ", e);
+                // Fallback to default if parsing fails or another error occurs
+                allSubjects = ["Physics", "Chemistry", "Maths", "English", "Biology", "Urdu"];
+                populateSubjectDropdowns();
             }
         }
 
@@ -516,7 +522,7 @@
                 if (!allSubjects.find(s => s.toLowerCase() === newSubject.toLowerCase())) {
                     allSubjects.push(newSubject);
                     await saveSubjects();
-                    await loadSubjects(); 
+                    populateSubjectDropdowns(); // Update UI directly
                     newSubjectInput.value = '';
                     subjectError.classList.add('hidden');
                 } else {
@@ -531,7 +537,7 @@
             if (selectedSubjectToRemove) {
                 allSubjects = allSubjects.filter(sub => sub !== selectedSubjectToRemove);
                 await saveSubjects();
-                await loadSubjects();
+                populateSubjectDropdowns(); // Update UI directly
                 subjectError.classList.add('hidden');
             } else {
                 subjectError.textContent = "Kripya hatane ke liye form mein se koi subject chunein.";
@@ -570,6 +576,8 @@
                 });
                 resultForm.reset();
                 subjectSelect.selectedIndex = 0;
+                studentField.selectedIndex = 0;
+                studentClass.selectedIndex = 0;
             } catch (e) {
                 console.error("Error adding document: ", e);
             }
