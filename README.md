@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,9 +10,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- jspdf and html2canvas for PDF generation -->
+    <!-- jspdf and jspdf-autotable for PDF generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <style>
         /* Using Inter font as the default */
         body {
@@ -69,7 +71,7 @@
             padding: 0.75rem 0;
             border-bottom: 1px dashed #d1d5db;
         }
-        /* NEW: Background for PDF export */
+        /* Background for PDF export */
         .printable-background {
             background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
         }
@@ -94,21 +96,13 @@
                     <label for="studentName" class="block text-sm font-medium text-gray-600 mb-1">Student ka Naam</label>
                     <input type="text" id="studentName" placeholder="Jaise: Anil Kumar" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
                 </div>
+                <!-- Class input changed to a select dropdown -->
                 <div>
                     <label for="studentClass" class="block text-sm font-medium text-gray-600 mb-1">Class</label>
                     <select id="studentClass" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
                         <option value="" disabled selected>Select Class</option>
                         <option value="XI">XI</option>
                         <option value="XII">XII</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="studentField" class="block text-sm font-medium text-gray-600 mb-1">Field</label>
-                    <select id="studentField" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
-                        <option value="" disabled selected>Select Field</option>
-                        <option value="Pre med">Pre med</option>
-                        <option value="Pre eng">Pre eng</option>
-                        <option value="CS">CS</option>
                     </select>
                 </div>
                 <div>
@@ -133,7 +127,7 @@
                     <label for="resultDate" class="block text-sm font-medium text-gray-600 mb-1">Date</label>
                     <input type="date" id="resultDate" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
                 </div>
-                <div class="col-span-1 md:col-span-3 lg:col-span-4">
+                <div class="col-span-1 md:col-span-3 lg:col-span-1">
                     <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 ease-in-out transform hover:scale-105">
                         Add Result
                     </button>
@@ -184,7 +178,6 @@
                     <tr>
                         <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Student Naam</th>
                         <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Class</th>
-                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Field</th>
                         <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Subject</th>
                         <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Topic</th>
                         <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Score</th>
@@ -203,7 +196,7 @@
     </div>
 
     <!-- Modal for Result Card -->
-    <div id="cardModal" class="modal-overlay">
+    <div id="cardModal" class="modal-overlay hidden">
         <div class="modal-container w-full max-w-sm sm:max-w-md">
             <div id="resultCardContent"></div>
             <div class="flex justify-end space-x-2 mt-4">
@@ -214,7 +207,7 @@
     </div>
 
     <!-- Modal for Editing Result -->
-    <div id="editModal" class="modal-overlay">
+    <div id="editModal" class="modal-overlay hidden">
         <div class="modal-container w-full max-w-lg">
             <h2 class="text-2xl font-semibold text-gray-700 mb-4">Result Edit Karein</h2>
             <form id="editForm">
@@ -224,19 +217,12 @@
                         <label for="editStudentName" class="block text-sm font-medium text-gray-600 mb-1">Student ka Naam</label>
                         <input type="text" id="editStudentName" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required>
                     </div>
+                     <!-- Edit Class input changed to a select dropdown -->
                     <div>
                         <label for="editStudentClass" class="block text-sm font-medium text-gray-600 mb-1">Class</label>
                         <select id="editStudentClass" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required>
                             <option value="XI">XI</option>
                             <option value="XII">XII</option>
-                        </select>
-                    </div>
-                     <div>
-                        <label for="editStudentField" class="block text-sm font-medium text-gray-600 mb-1">Field</label>
-                        <select id="editStudentField" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required>
-                            <option value="Pre med">Pre med</option>
-                            <option value="Pre eng">Pre eng</option>
-                            <option value="CS">CS</option>
                         </select>
                     </div>
                     <div>
@@ -269,15 +255,14 @@
     </div>
 
     <!-- Modal for Final Results -->
-    <div id="finalResultModal" class="modal-overlay">
+    <div id="finalResultModal" class="modal-overlay hidden">
         <div class="modal-container w-full max-w-4xl printable-background">
             <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
                  <h2 class="text-2xl font-semibold text-gray-700">Final Consolidated Results</h2>
                  <!-- Filter Buttons -->
-                 <div id="finalResultFilters" class="flex justify-start space-x-2">
-                     <button data-filter="Pre med" class="filter-btn bg-gray-500 text-white font-semibold py-1 px-3 rounded-lg hover:bg-gray-600 transition">Pre med</button>
-                     <button data-filter="Pre eng" class="filter-btn bg-gray-500 text-white font-semibold py-1 px-3 rounded-lg hover:bg-gray-600 transition">Pre eng</button>
-                     <button data-filter="CS" class="filter-btn bg-gray-500 text-white font-semibold py-1 px-3 rounded-lg hover:bg-gray-600 transition">CS</button>
+                 <div id="finalResultFilters" class="flex justify-start space-x-2 mt-2 sm:mt-0">
+                     <button data-filter="XI" class="filter-btn bg-gray-500 text-white font-semibold py-1 px-3 rounded-lg hover:bg-gray-600 transition">XI</button>
+                     <button data-filter="XII" class="filter-btn bg-gray-500 text-white font-semibold py-1 px-3 rounded-lg hover:bg-gray-600 transition">XII</button>
                      <button data-filter="All" class="filter-btn bg-blue-500 text-white font-semibold py-1 px-3 rounded-lg hover:bg-blue-600 transition">All</button>
                  </div>
             </div>
@@ -287,7 +272,6 @@
                         <tr>
                             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Student Naam</th>
                             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Class</th>
-                            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Field</th>
                             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Score</th>
                             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Marks</th>
                             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Overall Percentage</th>
@@ -311,7 +295,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, addDoc, deleteDoc, onSnapshot, collection, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, addDoc, deleteDoc, onSnapshot, collection, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global variables provided by the environment. Do not change these.
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -328,7 +312,6 @@
         const exportExcelBtn = document.getElementById('exportExcelBtn');
         const resultsTable = document.getElementById('resultsTable');
         const searchInput = document.getElementById('searchInput'); 
-        const studentFieldSelect = document.getElementById('studentField');
         const subjectSelect = document.getElementById('subject');
         const newSubjectInput = document.getElementById('newSubjectInput');
         const addSubjectBtn = document.getElementById('addSubjectBtn');
@@ -348,7 +331,6 @@
         const editDocId = document.getElementById('editDocId');
         const editStudentName = document.getElementById('editStudentName');
         const editStudentClass = document.getElementById('editStudentClass');
-        const editStudentField = document.getElementById('editStudentField');
         const editSubject = document.getElementById('editSubject');
         const editTopicName = document.getElementById('editTopicName');
         const editScore = document.getElementById('editScore');
@@ -369,20 +351,21 @@
         const auth = getAuth(app);
         let userId = null;
         let isAuthReady = false;
-        let currentResults = []; // Cache for current results
-        let allSubjects = []; // Simplified to a single array
+        let currentResults = []; // Cache for current results to use for editing/viewing
 
         // --- Utility Functions ---
         const checkTableEmpty = () => {
-            noResultsMessage.classList.toggle('hidden', resultsTableBody.rows.length > 0);
+            noResultsMessage.classList.toggle('hidden', resultsTableBody.rows.length > 0 || !isAuthReady);
         };
 
         const showModal = (modalElement) => {
-            modalElement.classList.add('active');
+            modalElement.classList.remove('hidden');
+            setTimeout(() => modalElement.classList.add('active'), 10);
         };
 
         const hideModal = (modalElement) => {
             modalElement.classList.remove('active');
+            setTimeout(() => modalElement.classList.add('hidden'), 300);
         };
 
         // --- Authentication ---
@@ -418,9 +401,9 @@
                 currentResults = []; 
                 
                 const sortedDocs = snapshot.docs.sort((a, b) => {
-                    const dateA = a.data().timestamp?.toDate() || 0;
-                    const dateB = b.data().timestamp?.toDate() || 0;
-                    return dateB - dateA;
+                    const timeA = a.data().timestamp?.toDate() || 0;
+                    const timeB = b.data().timestamp?.toDate() || 0;
+                    return timeB - timeA;
                 });
 
                 sortedDocs.forEach(doc => {
@@ -438,7 +421,6 @@
                     newRow.innerHTML = `
                         <td class="py-3 px-4">${data.studentName}</td>
                         <td class="py-3 px-4">${data.studentClass}</td>
-                        <td class="py-3 px-4">${data.studentField || 'N/A'}</td>
                         <td class="py-3 px-4">${data.subject}</td>
                         <td class="py-3 px-4">${data.topicName || 'N/A'}</td> 
                         <td class="py-3 px-4">${data.score} / ${data.totalMarks}</td>
@@ -463,51 +445,51 @@
         }
 
         // --- Subject Management ---
-        function populateSubjectDropdowns() {
-            [subjectSelect, editSubject].forEach(selectEl => {
-                const currentValue = selectEl.value;
-                selectEl.innerHTML = '<option value="" disabled selected>Select a Subject</option>';
-                allSubjects.forEach(subject => {
-                    const option = document.createElement('option');
-                    option.value = subject;
-                    option.textContent = subject;
-                    selectEl.appendChild(option);
-                });
-                // Try to restore previous selection, otherwise default to placeholder
-                if (allSubjects.includes(currentValue)) {
-                    selectEl.value = currentValue;
-                } else {
-                    selectEl.selectedIndex = 0;
-                }
-            });
-        }
-
         async function loadSubjects() {
             if (!isAuthReady || !userId) return;
             const subjectsDocRef = doc(db, `artifacts/${appId}/users/${userId}/appData/subjects`);
             try {
                 const docSnap = await getDoc(subjectsDocRef);
-                if (docSnap.exists() && docSnap.data().list) {
-                    allSubjects = JSON.parse(docSnap.data().list);
-                } else {
-                    // Default subjects if none exist in Firestore
-                    allSubjects = ["Physics", "Chemistry", "Maths", "English", "Biology", "Urdu"];
-                    await saveSubjects(); 
+                let subjects = ["Maths", "Science", "English", "History"]; // Default subjects
+                if (docSnap.exists()) {
+                    const data = docSnap.data().list;
+                    // Ensure data from Firestore is an array before using it
+                    if (Array.isArray(data)) {
+                        subjects = data;
+                    }
                 }
-                populateSubjectDropdowns();
+                
+                [subjectSelect, editSubject].forEach(selectEl => {
+                    const currentVal = selectEl.value;
+                    selectEl.innerHTML = '<option value="" disabled>Select a Subject</option>';
+                    subjects.forEach(subject => {
+                        const option = document.createElement('option');
+                        option.value = subject;
+                        option.textContent = subject;
+                        selectEl.appendChild(option);
+                    });
+                     if (subjects.includes(currentVal)) {
+                        selectEl.value = currentVal;
+                    } else {
+                        selectEl.selectedIndex = 0;
+                    }
+                });
+
+                // If the document doesn't exist, create it with the default subjects
+                if (!docSnap.exists()) {
+                    await saveSubjects(subjects);
+                }
             } catch (e) {
                 console.error("Error loading subjects: ", e);
-                // Fallback to default if parsing fails or another error occurs
-                allSubjects = ["Physics", "Chemistry", "Maths", "English", "Biology", "Urdu"];
-                populateSubjectDropdowns();
             }
         }
-
-        async function saveSubjects() {
+        
+        async function saveSubjects(subjects) {
             if (!isAuthReady || !userId) return;
             const subjectsDocRef = doc(db, `artifacts/${appId}/users/${userId}/appData/subjects`);
             try {
-                await setDoc(subjectsDocRef, { list: JSON.stringify(allSubjects) });
+                // Store the data as a field in a document
+                await setDoc(subjectsDocRef, { list: subjects });
                 subjectError.classList.add('hidden');
             } catch (e) {
                 console.error("Error saving subjects: ", e);
@@ -515,51 +497,103 @@
                 subjectError.classList.remove('hidden');
             }
         }
-
+        
         addSubjectBtn.addEventListener('click', async () => {
+            if (!isAuthReady || !userId) {
+                subjectError.textContent = "Authentication not ready. Please wait.";
+                subjectError.classList.remove('hidden');
+                return;
+            }
             const newSubject = newSubjectInput.value.trim();
-            if (newSubject) {
-                if (!allSubjects.find(s => s.toLowerCase() === newSubject.toLowerCase())) {
-                    allSubjects.push(newSubject);
-                    await saveSubjects();
-                    populateSubjectDropdowns(); // Update UI directly
+            if (!newSubject) {
+                 subjectError.textContent = "Please enter a subject name.";
+                 subjectError.classList.remove('hidden');
+                 return;
+            }
+
+            subjectError.classList.add('hidden');
+            const subjectsDocRef = doc(db, `artifacts/${appId}/users/${userId}/appData/subjects`);
+            
+            try {
+                const docSnap = await getDoc(subjectsDocRef);
+                let subjects = [];
+                if (docSnap.exists()) {
+                    const data = docSnap.data().list;
+                    if(Array.isArray(data)) {
+                        subjects = data;
+                    }
+                }
+
+                if (!subjects.find(s => s.toLowerCase() === newSubject.toLowerCase())) {
+                    subjects.push(newSubject);
+                    await saveSubjects(subjects);
+                    await loadSubjects(); 
                     newSubjectInput.value = '';
-                    subjectError.classList.add('hidden');
                 } else {
                     subjectError.textContent = "Yeh subject pehle se maujood hai.";
                     subjectError.classList.remove('hidden');
                 }
-            }
-        });
-
-        removeSubjectBtn.addEventListener('click', async () => {
-             const selectedSubjectToRemove = subjectSelect.value;
-            if (selectedSubjectToRemove) {
-                allSubjects = allSubjects.filter(sub => sub !== selectedSubjectToRemove);
-                await saveSubjects();
-                populateSubjectDropdowns(); // Update UI directly
-                subjectError.classList.add('hidden');
-            } else {
-                subjectError.textContent = "Kripya hatane ke liye form mein se koi subject chunein.";
+            } catch (error) {
+                console.error("Error adding subject:", error);
+                subjectError.textContent = "Could not add subject. Please try again.";
                 subjectError.classList.remove('hidden');
             }
         });
 
-        // --- Form Submission (Add Result) ---
-        resultForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
-            if (!isAuthReady || !userId) return;
+        removeSubjectBtn.addEventListener('click', async () => {
+            if (!isAuthReady || !userId) {
+                subjectError.textContent = "Authentication not ready. Please wait.";
+                subjectError.classList.remove('hidden');
+                return;
+            }
+            const selectedSubject = subjectSelect.value;
+            if (!selectedSubject) {
+                subjectError.textContent = "Kripya hatane ke liye koi subject chunein.";
+                subjectError.classList.remove('hidden');
+                return;
+            }
+
+            subjectError.classList.add('hidden');
+            const subjectsDocRef = doc(db, `artifacts/${appId}/users/${userId}/appData/subjects`);
+
+            try {
+                const docSnap = await getDoc(subjectsDocRef);
+                let subjects = [];
+                if (docSnap.exists()) {
+                    const data = docSnap.data().list;
+                    if(Array.isArray(data)) {
+                        subjects = data;
+                    }
+                }
+                
+                const updatedSubjects = subjects.filter(sub => sub !== selectedSubject);
+                await saveSubjects(updatedSubjects);
+                await loadSubjects();
+            } catch (error) {
+                console.error("Error removing subject:", error);
+                subjectError.textContent = "Could not remove subject. Please try again.";
+                subjectError.classList.remove('hidden');
+            }
+        });
+
+        // --- Result Form Submission ---
+        resultForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!isAuthReady || !userId) {
+                errorMessage.textContent = "Authentication not ready. Please wait.";
+                errorMessage.classList.remove('hidden');
+                return;
+            }
 
             const studentName = document.getElementById('studentName').value.trim();
-            const studentClass = document.getElementById('studentClass').value.trim();
-            const studentField = document.getElementById('studentField').value.trim();
-            const subject = subjectSelect.value;
-            const topicName = document.getElementById('topicName').value.trim(); 
-            const score = document.getElementById('score').value.trim();
-            const totalMarks = document.getElementById('totalMarks').value.trim();
-            const resultDate = document.getElementById('resultDate').value.trim();
-
-            if (!studentName || !studentClass || !studentField || !subject || !topicName || !score || !totalMarks || !resultDate) {
+            const studentClass = document.getElementById('studentClass').value;
+            const subject = document.getElementById('subject').value;
+            const topicName = document.getElementById('topicName').value.trim();
+            const score = parseFloat(document.getElementById('score').value);
+            const totalMarks = parseFloat(document.getElementById('totalMarks').value);
+            const resultDate = document.getElementById('resultDate').value;
+            
+            if (!studentName || !studentClass || !subject || !topicName || isNaN(score) || isNaN(totalMarks) || !resultDate) {
                 errorMessage.classList.remove('hidden');
                 return;
             }
@@ -568,84 +602,95 @@
             try {
                 const resultsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/results`);
                 await addDoc(resultsCollectionRef, {
-                    studentName, studentClass, studentField, subject, topicName, 
-                    score: parseInt(score, 10),
-                    totalMarks: parseInt(totalMarks, 10),
+                    studentName,
+                    studentClass,
+                    subject,
+                    topicName,
+                    score,
+                    totalMarks,
                     resultDate,
-                    timestamp: new Date()
+                    timestamp: serverTimestamp()
                 });
                 resultForm.reset();
-                subjectSelect.selectedIndex = 0;
-                studentField.selectedIndex = 0;
-                studentClass.selectedIndex = 0;
-            } catch (e) {
-                console.error("Error adding document: ", e);
+                document.getElementById('resultDate').valueAsDate = new Date(); // Reset date to today
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                errorMessage.textContent = "Result add nahi ho paya. Dobara koshish karein.";
+                errorMessage.classList.remove('hidden');
             }
         });
-        
-        // --- Event Delegation for Table Buttons (View, Edit, Delete) ---
-        resultsTableBody.addEventListener('click', async function(event) {
-            const target = event.target;
+
+        // --- Table Actions (View, Edit, Delete) ---
+        resultsTableBody.addEventListener('click', async (e) => {
+            const target = e.target;
             const docId = target.dataset.id;
-            if (!docId || !isAuthReady || !userId) return;
+            if (!docId) return;
 
-            const resultData = currentResults.find(r => r.id === docId);
-            if (!resultData) return;
-
+            // Delete action
             if (target.classList.contains('delete-btn')) {
-                if (window.confirm("Kya aap is result ko delete karna chahte hain?")) {
-                    try {
-                        await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/results`, docId));
-                    } catch (e) {
-                        console.error("Error deleting document: ", e);
-                    }
+                // The confirm() dialog is not reliable in all environments and has been removed.
+                // The delete operation will now happen immediately upon clicking.
+                try {
+                    const docRef = doc(db, `artifacts/${appId}/users/${userId}/results`, docId);
+                    await deleteDoc(docRef);
+                } catch (error) {
+                    console.error("Error deleting document: ", error);
                 }
-            } else if (target.classList.contains('edit-btn')) {
-                editDocId.value = docId;
-                editStudentName.value = resultData.studentName;
-                editStudentClass.value = resultData.studentClass;
-                editStudentField.value = resultData.studentField;
-                editSubject.value = resultData.subject;
-                editTopicName.value = resultData.topicName;
-                editScore.value = resultData.score;
-                editTotalMarks.value = resultData.totalMarks;
-                editResultDate.value = resultData.resultDate;
-                showModal(editModal);
-            } else if (target.classList.contains('view-card-btn')) {
-                const percentage = resultData.totalMarks > 0 ? ((resultData.score / resultData.totalMarks) * 100).toFixed(2) : 'N/A';
-                resultCardContent.innerHTML = `
-                    <div class="text-center pb-4 result-card-header">
-                        <h3 class="text-2xl font-bold text-gray-800">Result Card</h3>
-                        <p class="text-gray-500">${new Date(resultData.resultDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-                    </div>
-                    <div class="mt-6 space-y-3">
-                        <div class="result-card-item"><span class="font-semibold text-gray-600">Naam:</span> <span class="font-medium text-gray-800">${resultData.studentName}</span></div>
-                        <div class="result-card-item"><span class="font-semibold text-gray-600">Class:</span> <span class="font-medium text-gray-800">${resultData.studentClass}</span></div>
-                        <div class="result-card-item"><span class="font-semibold text-gray-600">Field:</span> <span class="font-medium text-gray-800">${resultData.studentField}</span></div>
-                        <div class="result-card-item"><span class="font-semibold text-gray-600">Subject:</span> <span class="font-medium text-gray-800">${resultData.subject}</span></div>
-                        <div class="result-card-item"><span class="font-semibold text-gray-600">Topic:</span> <span class="font-medium text-gray-800">${resultData.topicName}</span></div>
-                        <div class="result-card-item"><span class="font-semibold text-gray-600">Score:</span> <span class="font-medium text-gray-800">${resultData.score} / ${resultData.totalMarks}</span></div>
-                        <div class="result-card-item"><span class="font-semibold text-gray-600">Percentage:</span> <span class="font-bold text-xl text-blue-600">${percentage}%</span></div>
-                    </div>
-                `;
-                showModal(cardModal);
+            }
+
+            // Edit action
+            if (target.classList.contains('edit-btn')) {
+                const resultData = currentResults.find(r => r.id === docId);
+                if (resultData) {
+                    editDocId.value = docId;
+                    editStudentName.value = resultData.studentName;
+                    editStudentClass.value = resultData.studentClass;
+                    editSubject.value = resultData.subject;
+                    editTopicName.value = resultData.topicName;
+                    editScore.value = resultData.score;
+                    editTotalMarks.value = resultData.totalMarks;
+                    editResultDate.value = resultData.resultDate;
+                    showModal(editModal);
+                }
+            }
+
+            // View Card action
+            if (target.classList.contains('view-card-btn')) {
+                const resultData = currentResults.find(r => r.id === docId);
+                if (resultData) {
+                    const percentage = resultData.totalMarks > 0 ? ((resultData.score / resultData.totalMarks) * 100).toFixed(2) : 'N/A';
+                    resultCardContent.innerHTML = `
+                        <div class="text-center pb-4 result-card-header">
+                            <h3 class="text-2xl font-bold text-gray-800">Result Card</h3>
+                        </div>
+                        <div class="mt-4 space-y-3">
+                            <div class="result-card-item"><span class="font-semibold text-gray-600">Student:</span> <span class="font-bold text-gray-900">${resultData.studentName}</span></div>
+                            <div class="result-card-item"><span class="font-semibold text-gray-600">Class:</span> <span class="font-bold text-gray-900">${resultData.studentClass}</span></div>
+                            <div class="result-card-item"><span class="font-semibold text-gray-600">Subject:</span> <span class="font-bold text-gray-900">${resultData.subject}</span></div>
+                            <div class="result-card-item"><span class="font-semibold text-gray-600">Topic:</span> <span class="font-bold text-gray-900">${resultData.topicName}</span></div>
+                            <div class="result-card-item"><span class="font-semibold text-gray-600">Score:</span> <span class="font-bold text-gray-900">${resultData.score} / ${resultData.totalMarks}</span></div>
+                            <div class="result-card-item"><span class="font-semibold text-gray-600">Percentage:</span> <span class="font-bold text-green-600">${percentage}%</span></div>
+                            <div class="result-card-item"><span class="font-semibold text-gray-600">Date:</span> <span class="font-bold text-gray-900">${new Date(resultData.resultDate).toLocaleDateString()}</span></div>
+                        </div>
+                    `;
+                    showModal(cardModal);
+                }
             }
         });
 
         // --- Edit Form Submission ---
-        editForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
+        editForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
             const docId = editDocId.value;
             if (!docId || !isAuthReady || !userId) return;
 
             const updatedData = {
-                studentName: editStudentName.value,
+                studentName: editStudentName.value.trim(),
                 studentClass: editStudentClass.value,
-                studentField: editStudentField.value,
                 subject: editSubject.value,
-                topicName: editTopicName.value,
-                score: parseInt(editScore.value, 10),
-                totalMarks: parseInt(editTotalMarks.value, 10),
+                topicName: editTopicName.value.trim(),
+                score: parseFloat(editScore.value),
+                totalMarks: parseFloat(editTotalMarks.value),
                 resultDate: editResultDate.value
             };
 
@@ -653,29 +698,27 @@
                 const docRef = doc(db, `artifacts/${appId}/users/${userId}/results`, docId);
                 await updateDoc(docRef, updatedData);
                 hideModal(editModal);
-            } catch (e) {
-                console.error("Error updating document: ", e);
+            } catch (error) {
+                console.error("Error updating document:", error);
             }
         });
-        
+
         // --- Search Functionality ---
         searchInput.addEventListener('keyup', () => {
             const searchTerm = searchInput.value.toLowerCase();
             const rows = resultsTableBody.getElementsByTagName('tr');
-            for (let row of rows) {
+            Array.from(rows).forEach(row => {
                 const studentName = row.dataset.studentName;
-                if (studentName.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            }
+                row.style.display = studentName.includes(searchTerm) ? '' : 'none';
+            });
         });
 
-        // --- Modal Closing ---
+        // --- Modal Close Buttons ---
         closeCardModalBtn.addEventListener('click', () => hideModal(cardModal));
         closeEditModalBtn.addEventListener('click', () => hideModal(editModal));
         closeFinalResultModalBtn.addEventListener('click', () => hideModal(finalResultModal));
+        
+        // Close modal on overlay click
         [cardModal, editModal, finalResultModal].forEach(modal => {
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {
@@ -684,71 +727,31 @@
             });
         });
 
-        // --- PDF and Excel Export ---
-        const { jsPDF } = window.jspdf;
-        exportPdfBtn.addEventListener('click', () => {
-            html2canvas(resultsTable).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('l', 'mm', 'a4');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = pdf.internal.pageSize.getHeight();
-                const canvasWidth = canvas.width;
-                const canvasHeight = canvas.height;
-                const ratio = canvasWidth / canvasHeight;
-                const width = pdfWidth - 20;
-                const height = width / ratio;
-                pdf.addImage(imgData, 'PNG', 10, 10, width, height);
-                pdf.save("student-results.pdf");
-            });
-        });
-
-        exportCardPdfBtn.addEventListener('click', () => {
-            html2canvas(resultCardContent).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('p', 'mm', 'a5');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const canvasWidth = canvas.width;
-                const canvasHeight = canvas.height;
-                const ratio = canvasWidth / canvasHeight;
-                const width = pdfWidth - 20;
-                const height = width / ratio;
-                pdf.addImage(imgData, 'PNG', 10, 10, width, height);
-                pdf.save("result-card.pdf");
-            });
-        });
-
-        exportExcelBtn.addEventListener('click', () => {
-            let csvContent = "data:text/csv;charset=utf-8,";
-            const headers = ["Student Name", "Class", "Field", "Subject", "Topic", "Score", "Total Marks", "Percentage", "Date"];
-            csvContent += headers.join(",") + "\r\n";
-
-            currentResults.forEach(result => {
-                const percentage = result.totalMarks > 0 ? ((result.score / result.totalMarks) * 100).toFixed(2) : 'N/A';
-                const row = [
-                    result.studentName,
-                    result.studentClass,
-                    result.studentField,
-                    result.subject,
-                    result.topicName,
-                    result.score,
-                    result.totalMarks,
-                    percentage + '%',
-                    result.resultDate
-                ];
-                csvContent += row.join(",") + "\r\n";
+        // --- Final Result Calculation and Display ---
+        showFinalResultBtn.addEventListener('click', () => {
+            const consolidated = {};
+            currentResults.forEach(res => {
+                const key = `${res.studentName.trim().toLowerCase()}_${res.studentClass}`;
+                if (!consolidated[key]) {
+                    consolidated[key] = {
+                        studentName: res.studentName,
+                        studentClass: res.studentClass,
+                        totalScore: 0,
+                        totalMarks: 0,
+                        count: 0
+                    };
+                }
+                consolidated[key].totalScore += res.score;
+                consolidated[key].totalMarks += res.totalMarks;
+                consolidated[key].count++;
             });
 
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "student_results.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            const finalData = Object.values(consolidated);
+            populateFinalResultTable(finalData);
+            showModal(finalResultModal);
         });
 
-        // --- Final Results Logic ---
-        function calculateGrade(percentage) {
+        function getGrade(percentage) {
             if (percentage >= 90) return 'A+';
             if (percentage >= 80) return 'A';
             if (percentage >= 70) return 'B';
@@ -757,83 +760,107 @@
             return 'F';
         }
 
-        function displayFinalResults(filter = 'All') {
-            const finalResults = {};
-            
-            const filteredData = currentResults.filter(result => {
-                if (filter === 'All') return true;
-                return result.studentField === filter;
-            });
-
-            filteredData.forEach(result => {
-                const key = `${result.studentName}-${result.studentClass}-${result.studentField}`;
-                if (!finalResults[key]) {
-                    finalResults[key] = {
-                        studentName: result.studentName,
-                        studentClass: result.studentClass,
-                        studentField: result.studentField,
-                        totalScore: 0,
-                        totalMarks: 0,
-                    };
-                }
-                finalResults[key].totalScore += result.score;
-                finalResults[key].totalMarks += result.totalMarks;
-            });
-
+        function populateFinalResultTable(data) {
             finalResultTableBody.innerHTML = '';
-            Object.values(finalResults).forEach(data => {
-                const overallPercentage = data.totalMarks > 0 ? ((data.totalScore / data.totalMarks) * 100).toFixed(2) : 0;
-                const grade = calculateGrade(overallPercentage);
-                const row = `
-                    <tr class="border-b border-gray-200 hover:bg-gray-50">
-                        <td class="py-3 px-4">${data.studentName}</td>
-                        <td class="py-3 px-4">${data.studentClass}</td>
-                        <td class="py-3 px-4">${data.studentField}</td>
-                        <td class="py-3 px-4">${data.totalScore}</td>
-                        <td class="py-3 px-4">${data.totalMarks}</td>
-                        <td class="py-3 px-4 font-semibold">${overallPercentage}%</td>
-                        <td class="py-3 px-4 font-bold text-lg ${grade === 'F' ? 'text-red-500' : 'text-green-600'}">${grade}</td>
-                    </tr>
+            data.forEach(item => {
+                const overallPercentage = item.totalMarks > 0 ? ((item.totalScore / item.totalMarks) * 100).toFixed(2) : 0;
+                const grade = getGrade(overallPercentage);
+                const row = document.createElement('tr');
+                row.dataset.class = item.studentClass;
+                row.innerHTML = `
+                    <td class="py-3 px-4">${item.studentName}</td>
+                    <td class="py-3 px-4">${item.studentClass}</td>
+                    <td class="py-3 px-4">${item.totalScore}</td>
+                    <td class="py-3 px-4">${item.totalMarks}</td>
+                    <td class="py-3 px-4">${overallPercentage}%</td>
+                    <td class="py-3 px-4 font-bold">${grade}</td>
                 `;
-                finalResultTableBody.innerHTML += row;
+                finalResultTableBody.appendChild(row);
             });
         }
 
-        showFinalResultBtn.addEventListener('click', () => {
-            displayFinalResults();
-            showModal(finalResultModal);
-        });
-
+        // --- Final Result Filter Logic ---
         finalResultFilters.addEventListener('click', (e) => {
-            if (e.target.classList.contains('filter-btn')) {
+            if (e.target.tagName === 'BUTTON') {
                 const filter = e.target.dataset.filter;
+                
                 // Update active button style
-                finalResultFilters.querySelectorAll('.filter-btn').forEach(btn => {
+                finalResultFilters.querySelectorAll('button').forEach(btn => {
                     btn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
                     btn.classList.add('bg-gray-500', 'hover:bg-gray-600');
                 });
-                e.target.classList.remove('bg-gray-500', 'hover:bg-gray-600');
                 e.target.classList.add('bg-blue-500', 'hover:bg-blue-600');
-                
-                displayFinalResults(filter);
+                e.target.classList.remove('bg-gray-500', 'hover:bg-gray-600');
+
+                const rows = finalResultTableBody.getElementsByTagName('tr');
+                Array.from(rows).forEach(row => {
+                    if (filter === 'All' || row.dataset.class === filter) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
             }
         });
 
-        exportFinalResultPdfBtn.addEventListener('click', () => {
-             html2canvas(document.getElementById('finalResultTable')).then(canvas => {
+
+        // --- Export Functionality ---
+        const { jsPDF } = window.jspdf;
+
+        exportPdfBtn.addEventListener('click', () => {
+            const doc = new jsPDF();
+            doc.autoTable({ html: '#resultsTable' });
+            doc.save('student-results.pdf');
+        });
+
+        exportExcelBtn.addEventListener('click', () => {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            const rows = resultsTable.querySelectorAll("tr");
+            rows.forEach(row => {
+                let rowData = [];
+                row.querySelectorAll("th, td").forEach((cell, index) => {
+                    // Skip the last cell (Actions)
+                    if (index < row.cells.length - 1) {
+                         rowData.push(`"${cell.innerText.replace(/"/g, '""')}"`);
+                    }
+                });
+                csvContent += rowData.join(",") + "\r\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "student-results.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        exportCardPdfBtn.addEventListener('click', () => {
+            const card = document.getElementById('resultCardContent');
+            html2canvas(card).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = pdf.internal.pageSize.getHeight();
-                const canvasWidth = canvas.width;
-                const canvasHeight = canvas.height;
-                const ratio = canvasWidth / canvasHeight;
-                const width = pdfWidth - 20;
-                const height = width / ratio;
-                pdf.addImage(imgData, 'PNG', 10, 10, width, height > pdfHeight - 20 ? pdfHeight - 20 : height);
-                pdf.save("final-consolidated-results.pdf");
+                const doc = new jsPDF('p', 'mm', 'a6');
+                const imgProps= doc.getImageProperties(imgData);
+                const pdfWidth = doc.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                doc.save('result-card.pdf');
             });
         });
+
+        exportFinalResultPdfBtn.addEventListener('click', () => {
+            const doc = new jsPDF();
+            doc.autoTable({ html: '#finalResultTable' });
+            doc.save('final-consolidated-results.pdf');
+        });
+
+        // --- Initial Setup ---
+        document.getElementById('resultDate').valueAsDate = new Date();
+        // Auto-select the 'All' filter by default when the modal is opened
+        finalResultFilters.querySelector('[data-filter="All"]').classList.add('bg-blue-500', 'hover:bg-blue-600');
+        finalResultFilters.querySelector('[data-filter="All"]').classList.remove('bg-gray-500', 'hover:bg-gray-600');
+
 
     </script>
 </body>
