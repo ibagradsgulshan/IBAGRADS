@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -93,15 +94,6 @@
                         <input type="text" id="topicName" placeholder="Jaise: Algebra" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
                     </div>
                     <div>
-                        <label for="testType" class="block text-sm font-medium text-gray-600 mb-1">Test Type</label>
-                        <select id="testType" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
-                            <option value="" disabled selected>Select Test Type</option>
-                            <option value="Weekly Test">Weekly Test</option>
-                            <option value="Monthly Test">Monthly Test</option>
-                            <option value="Yearly Test">Yearly Test</option>
-                        </select>
-                    </div>
-                    <div>
                         <label for="score" class="block text-sm font-medium text-gray-600 mb-1">Score</label>
                         <input type="number" id="score" placeholder="Jaise: 85" min="0" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
                     </div>
@@ -150,23 +142,12 @@
                 </div>
             </div>
 
-            <!-- New Report Buttons -->
-            <div class="flex flex-wrap items-center justify-center sm:justify-end gap-2 mb-4">
-                <button id="weeklyReportBtn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">Weekly Test Report</button>
-                <button id="monthlyReportBtn" class="bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-700 transition flex items-center gap-2">Monthly Test Report</button>
-                <button id="yearlyReportBtn" class="bg-purple-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-purple-700 transition flex items-center gap-2">Yearly Test Report</button>
-            </div>
-            <!-- Message box for reports -->
-            <div id="reportMessageBox" class="hidden text-center p-4 rounded-lg bg-blue-50 text-blue-800 mb-4 transition-all duration-300 ease-in-out"></div>
-            
             <table id="resultsTable" class="min-w-full bg-white rounded-lg shadow-md overflow-hidden">
                 <thead class="bg-gray-100 text-gray-600">
                     <tr>
                         <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Student Naam</th>
                         <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Class</th>
                         <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Subject</th>
-                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Topic</th>
-                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Test Type</th>
                         <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Score</th>
                         <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Date</th>
                         <th class="text-center py-3 px-4 uppercase font-semibold text-sm">Actions</th>
@@ -210,11 +191,10 @@
             const addSubjectBtn = document.getElementById('addSubjectBtn');
             const removeSubjectBtn = document.getElementById('removeSubjectBtn');
             const subjectError = document.getElementById('subjectError');
-            
-            const weeklyReportBtn = document.getElementById('weeklyReportBtn');
-            const monthlyReportBtn = document.getElementById('monthlyReportBtn');
-            const yearlyReportBtn = document.getElementById('yearlyReportBtn');
-            const reportMessageBox = document.getElementById('reportMessageBox');
+
+            const exportPdfBtn = document.getElementById('exportPdfBtn');
+            const exportExcelBtn = document.getElementById('exportExcelBtn');
+            const showFinalResultBtn = document.getElementById('showFinalResultBtn');
 
             let currentResults = [];
             let subjects = [];
@@ -253,8 +233,6 @@
                         <td class="py-3 px-4 font-medium">${data.studentName}</td>
                         <td class="py-3 px-4">${data.studentClass}</td>
                         <td class="py-3 px-4">${data.subject}</td>
-                        <td class="py-3 px-4">${data.topicName}</td>
-                        <td class="py-3 px-4">${data.testType}</td>
                         <td class="py-3 px-4">${data.score} / ${data.totalMarks} (${percentage}%)</td>
                         <td class="py-3 px-4">${new Date(data.resultDate).toLocaleDateString()}</td>
                         <td class="py-3 px-4">
@@ -325,7 +303,6 @@
                     studentClass: document.getElementById('studentClass').value,
                     subject: subjectSelect.value,
                     topicName: document.getElementById('topicName').value.trim(),
-                    testType: document.getElementById('testType').value,
                     score: parseInt(document.getElementById('score').value, 10),
                     totalMarks: parseInt(document.getElementById('totalMarks').value, 10),
                     resultDate: document.getElementById('resultDate').value,
@@ -337,7 +314,6 @@
                 resultForm.reset();
                 document.getElementById('studentClass').selectedIndex = 0;
                 subjectSelect.selectedIndex = 0;
-                document.getElementById('testType').selectedIndex = 0;
             });
 
             // --- Table Actions (View, Edit, Delete) ---
@@ -384,7 +360,6 @@
                         <tr>
                             <td class="border p-2">${data.subject}</td>
                             <td class="border p-2">${data.topicName}</td>
-                            <td class="border p-2">${data.testType}</td>
                             <td class="border p-2 text-center">${data.score}</td>
                             <td class="border p-2 text-center">${data.totalMarks}</td>
                             <td class="border p-2 text-center font-semibold">${percentage}%</td>
@@ -417,7 +392,6 @@
                                 <tr>
                                     <th class="border p-2 text-left">Subject</th>
                                     <th class="border p-2 text-left">Topic</th>
-                                    <th class="border p-2 text-left">Test Type</th>
                                     <th class="border p-2 text-center">Score</th>
                                     <th class="border p-2 text-center">Total Marks</th>
                                     <th class="border p-2 text-center">Percentage</th>
@@ -462,7 +436,6 @@
                         <div><label for="editStudentClass" class="block text-sm font-medium">Class</label><select id="editStudentClass" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required><option value="XI">XI</option><option value="XII">XII</option></select></div>
                         <div><label for="editSubject" class="block text-sm font-medium">Subject</label><select id="editSubject" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required></select></div>
                         <div><label for="editTopicName" class="block text-sm font-medium">Topic</label><input type="text" id="editTopicName" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.topicName}" required></div>
-                        <div><label for="editTestType" class="block text-sm font-medium">Test Type</label><select id="editTestType" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required><option value="Weekly Test">Weekly Test</option><option value="Monthly Test">Monthly Test</option><option value="Yearly Test">Yearly Test</option></select></div>
                         <div><label for="editScore" class="block text-sm font-medium">Score</label><input type="number" id="editScore" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.score}" required></div>
                         <div><label for="editTotalMarks" class="block text-sm font-medium">Total Marks</label><input type="number" id="editTotalMarks" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.totalMarks}" required></div>
                         <div class="col-span-2"><label for="editResultDate" class="block text-sm font-medium">Date</label><input type="date" id="editResultDate" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.resultDate}" required></div>
@@ -476,7 +449,6 @@
                 populateSubjectDropdowns();
                 document.getElementById('editStudentClass').value = data.studentClass;
                 document.getElementById('editSubject').value = data.subject;
-                document.getElementById('editTestType').value = data.testType;
                 
                 document.getElementById('closeEditModalBtn').onclick = () => hideModal('editModal');
                 document.getElementById('editForm').onsubmit = (e) => {
@@ -489,7 +461,6 @@
                             studentClass: document.getElementById('editStudentClass').value,
                             subject: document.getElementById('editSubject').value,
                             topicName: document.getElementById('editTopicName').value,
-                            testType: document.getElementById('editTestType').value,
                             score: parseInt(document.getElementById('editScore').value, 10),
                             totalMarks: parseInt(document.getElementById('editTotalMarks').value, 10),
                             resultDate: document.getElementById('editResultDate').value,
@@ -521,42 +492,178 @@
 
                 confirmBtn.addEventListener('click', confirmHandler);
                 cancelBtn.addEventListener('click', cancelHandler);
+                
                 showModal('confirmModal');
             };
 
             // --- Export Functions ---
-            const exportToPdf = (element, filename, orientation = 'portrait') => {
+            const exportToPdf = (element, filename, orientation) => {
                 const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({ orientation: orientation, unit: 'mm', format: 'a4' });
-                pdf.html(element, {
-                    callback: function (pdf) {
-                        pdf.save(filename);
-                    },
-                    x: 10, y: 10
+                const pdf = new jsPDF(orientation, 'pt', 'a4');
+                const originalBg = element.style.backgroundColor;
+                element.style.backgroundColor = 'white';
+
+                html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgWidth = 595.28; // A4 width in pt
+                    const pageHeight = 841.89; // A4 height in pt
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    let heightLeft = imgHeight;
+                    let position = 0;
+
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+
+                    while (heightLeft >= 0) {
+                        position = heightLeft - imgHeight;
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+                    }
+
+                    pdf.save(filename);
+                    element.style.backgroundColor = originalBg;
                 });
             };
 
-            // --- Report Generation Logic (New) ---
-            const generateReport = (reportType) => {
-                reportMessageBox.textContent = `Generating the ${reportType}...`;
-                reportMessageBox.classList.remove('hidden');
-                // Simulate a delay for a realistic feel
-                setTimeout(() => {
-                    reportMessageBox.textContent = `${reportType} has been generated successfully.`;
-                    // In a real application, you would add your report generation and download logic here.
-                }, 1500);
+            const exportToExcel = (data, filename) => {
+                if (data.length === 0) return;
+                const headers = ["Student Name", "Class", "Subject", "Topic Name", "Score", "Total Marks", "Percentage", "Date"];
+                const csvRows = [
+                    headers.join(','),
+                    ...data.map(row => {
+                        const percentage = row.totalMarks > 0 ? ((row.score / row.totalMarks) * 100).toFixed(2) : 0;
+                        return [
+                            `"${row.studentName.replace(/"/g, '""')}"`,
+                            `"${row.studentClass}"`,
+                            `"${row.subject}"`,
+                            `"${row.topicName.replace(/"/g, '""')}"`,
+                            row.score,
+                            row.totalMarks,
+                            percentage,
+                            `"${row.resultDate}"`
+                        ].join(',');
+                    })
+                ].join('\n');
+                
+                const blob = new Blob([csvRows], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             };
 
-            weeklyReportBtn.addEventListener('click', () => generateReport('Weekly Test Report'));
-            monthlyReportBtn.addEventListener('click', () => generateReport('Monthly Test Report'));
-            yearlyReportBtn.addEventListener('click', () => generateReport('Yearly Test Report'));
-            
-            // --- Initialization ---
+            // --- Final Results Modal ---
+            const createFinalResultsTableHTML = (allResults) => {
+                const students = allResults.reduce((acc, result) => {
+                    const key = `${result.studentName}-${result.studentClass}`;
+                    if (!acc[key]) {
+                        acc[key] = {
+                            name: result.studentName,
+                            class: result.studentClass,
+                            results: []
+                        };
+                    }
+                    acc[key].results.push(result);
+                    return acc;
+                }, {});
+
+                const rows = Object.values(students).map(student => {
+                    const totalScore = student.results.reduce((sum, r) => sum + r.score, 0);
+                    const totalMarks = student.results.reduce((sum, r) => sum + r.totalMarks, 0);
+                    const overallPercentage = totalMarks > 0 ? ((totalScore / totalMarks) * 100).toFixed(2) : 0;
+                    const grade = calculateGrade(overallPercentage);
+                    const remarks = getRemarks(grade);
+
+                    return `
+                        <tr class="hover:bg-gray-50">
+                            <td class="py-3 px-4 font-medium">${student.name}</td>
+                            <td class="py-3 px-4">${student.class}</td>
+                            <td class="py-3 px-4 text-center">${student.results.length}</td>
+                            <td class="py-3 px-4 text-center">${totalScore} / ${totalMarks}</td>
+                            <td class="py-3 px-4 text-center font-bold text-blue-600">${overallPercentage}%</td>
+                            <td class="py-3 px-4 text-center font-semibold text-blue-600">${grade}</td>
+                            <td class="py-3 px-4">${remarks}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="printable-background p-6 rounded-lg shadow-inner">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-gray-800">Final Results Summary</h3>
+                            <p class="text-sm font-medium text-gray-500">Date: ${new Date().toLocaleDateString('en-GB')}</p>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white rounded-lg shadow-md overflow-hidden">
+                                <thead class="bg-gray-200 text-gray-700">
+                                    <tr>
+                                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Student Name</th>
+                                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Class</th>
+                                        <th class="text-center py-3 px-4 uppercase font-semibold text-sm">Total Tests</th>
+                                        <th class="text-center py-3 px-4 uppercase font-semibold text-sm">Total Score</th>
+                                        <th class="text-center py-3 px-4 uppercase font-semibold text-sm">Overall %</th>
+                                        <th class="text-center py-3 px-4 uppercase font-semibold text-sm">Overall Grade</th>
+                                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-gray-700 divide-y divide-gray-200">
+                                    ${rows}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            };
+
+            const showFinalResultsModal = () => {
+                const container = document.getElementById('finalResultModalContainer');
+                container.innerHTML = `
+                    <div id="finalResultsPrintable" class="p-4">${createFinalResultsTableHTML(currentResults)}</div>
+                    <div class="flex justify-end space-x-2 mt-4">
+                        <button id="exportFinalResultsPdf" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition">Export PDF</button>
+                        <button id="closeFinalResultModalBtn" class="bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-400 transition">Band Karein</button>
+                    </div>`;
+
+                document.getElementById('closeFinalResultModalBtn').onclick = () => hideModal('finalResultModal');
+                document.getElementById('exportFinalResultsPdf').onclick = () => {
+                    exportToPdf(document.getElementById('finalResultsPrintable'), 'final_results.pdf', 'landscape');
+                };
+                showModal('finalResultModal');
+            };
+
+            // --- Event Listeners for main buttons ---
+            exportPdfBtn.addEventListener('click', () => {
+                exportToPdf(document.getElementById('resultsTable'), 'all_results.pdf', 'landscape');
+            });
+            exportExcelBtn.addEventListener('click', () => {
+                exportToExcel(currentResults, 'all_results.csv');
+            });
+            showFinalResultBtn.addEventListener('click', () => {
+                showFinalResultsModal();
+            });
+
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                const rows = document.querySelectorAll('#resultsTableBody tr');
+                rows.forEach(row => {
+                    const studentName = row.dataset.studentName;
+                    const isVisible = studentName.includes(searchTerm);
+                    row.style.display = isVisible ? '' : 'none';
+                });
+            });
+
+            // --- Initial Load ---
             loadSubjectsFromLocal();
-            loadResultsFromLocal();
             populateSubjectDropdowns();
+            loadResultsFromLocal();
             renderResults();
         });
     </script>
+
 </body>
 </html>
