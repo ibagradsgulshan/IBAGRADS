@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,6 +19,14 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f0f2f5;
+            background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2728&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .main-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
         }
         .modal-overlay {
             position: fixed;
@@ -39,17 +48,14 @@
             transition: transform 0.3s ease;
         }
         .modal-overlay.active .modal-container { transform: scale(1); }
-        .printable-background {
-            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
-        }
     </style>
 </head>
 <body class="bg-slate-100 flex items-center justify-center min-h-screen p-4 sm:p-6">
 
-    <div class="w-full max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-6 sm:p-8">
+    <div class="w-full max-w-7xl mx-auto main-container rounded-2xl shadow-xl p-6 sm:p-8">
         
         <!-- Header Section -->
-        <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 pb-4 border-b border-gray-200">
             <div class="flex items-center gap-4">
                 <div class="bg-blue-100 p-3 rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
@@ -59,7 +65,7 @@
                     <p class="text-sm text-gray-500">Student Result Management System</p>
                 </div>
             </div>
-            <div class="text-right">
+            <div class="text-left md:text-right mt-4 md:mt-0">
                 <p id="currentDate" class="font-medium text-gray-700"></p>
                 <p class="text-sm text-gray-500">karachi sindh</p>
             </div>
@@ -361,7 +367,7 @@
                 return `
                 <div class="p-8 border-2 border-gray-800 bg-white relative">
                     <div class="absolute inset-0 flex items-center justify-center z-0">
-                        <p class="text-gray-200 text-8xl font-black select-none opacity-50">PEI</p>
+                         <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-200 opacity-50"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
                     </div>
                     <div class="relative z-10">
                         <div class="flex items-center justify-between pb-4 border-b-2 border-gray-800">
@@ -510,19 +516,26 @@
 
                 const table = container.querySelector('#finalResultTable');
                 table.querySelector('thead').innerHTML = `<tr>
-                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Student</th><th class="text-left py-3 px-4 uppercase font-semibold text-sm">Class</th>
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Student</th>
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Class</th>
                     <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Degree</th>
-                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Score</th><th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Marks</th>
-                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Percentage</th><th class="text-left py-3 px-4 uppercase font-semibold text-sm">Grade</th></tr>`;
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tests Attempted</th>
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Score</th>
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Marks</th>
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Percentage</th>
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Grade</th></tr>`;
 
                 const renderFinalTable = (filter = 'All') => {
                     const summaries = {};
                     const filtered = currentResults.filter(r => filter === 'All' || r.studentClass === filter);
                     filtered.forEach(r => {
                         const key = `${r.studentName}-${r.studentClass}-${r.degree}`;
-                        if (!summaries[key]) summaries[key] = { name: r.studentName, class: r.studentClass, degree: r.degree, totalScore: 0, totalMarks: 0 };
+                        if (!summaries[key]) {
+                            summaries[key] = { name: r.studentName, class: r.studentClass, degree: r.degree, totalScore: 0, totalMarks: 0, testsAttempted: 0 };
+                        }
                         summaries[key].totalScore += r.score;
                         summaries[key].totalMarks += r.totalMarks;
+                        summaries[key].testsAttempted += 1;
                     });
                     
                     const tbody = table.querySelector('tbody');
@@ -531,9 +544,14 @@
                         const p = s.totalMarks > 0 ? (s.totalScore / s.totalMarks * 100).toFixed(2) : 0;
                         const g = calculateGrade(p);
                         tbody.innerHTML += `<tr>
-                            <td class="p-3">${s.name}</td><td class="p-3">${s.class}</td><td class="p-3">${s.degree}</td>
-                            <td class="p-3">${s.totalScore}</td><td class="p-3">${s.totalMarks}</td>
-                            <td class="p-3 font-semibold">${p}%</td><td class="p-3 font-bold">${g}</td></tr>`;
+                            <td class="p-3">${s.name}</td>
+                            <td class="p-3">${s.class}</td>
+                            <td class="p-3">${s.degree}</td>
+                            <td class="p-3">${s.testsAttempted}</td>
+                            <td class="p-3">${s.totalScore}</td>
+                            <td class="p-3">${s.totalMarks}</td>
+                            <td class="p-3 font-semibold">${p}%</td>
+                            <td class="p-3 font-bold">${g}</td></tr>`;
                     });
                 };
 
@@ -575,20 +593,12 @@
                     let finalImgWidth, finalImgHeight;
 
                     // Calculate final dimensions to fit within the available space while maintaining aspect ratio
-                    if (imgProps.width > imgProps.height) { // Landscape-like image
+                    if (imgAspectRatio > (availableWidth / availableHeight)) {
                         finalImgWidth = availableWidth;
                         finalImgHeight = finalImgWidth / imgAspectRatio;
-                        if (finalImgHeight > availableHeight) {
-                           finalImgHeight = availableHeight;
-                           finalImgWidth = finalImgHeight * imgAspectRatio;
-                        }
-                    } else { // Portrait-like image
+                    } else {
                         finalImgHeight = availableHeight;
                         finalImgWidth = finalImgHeight * imgAspectRatio;
-                        if (finalImgWidth > availableWidth) {
-                            finalImgWidth = availableWidth;
-                            finalImgHeight = finalImgWidth / imgAspectRatio;
-                        }
                     }
 
                     // Center the image
