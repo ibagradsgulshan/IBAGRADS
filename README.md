@@ -40,13 +40,13 @@
         }
         .modal-overlay.active .modal-container { transform: scale(1); }
         .printable-background {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
         }
     </style>
 </head>
 <body class="bg-slate-100 flex items-center justify-center min-h-screen p-4 sm:p-6">
 
-    <div class="w-full max-w-6xl mx-auto bg-white rounded-2xl shadow-xl p-6 sm:p-8">
+    <div class="w-full max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-6 sm:p-8">
         
         <!-- Header Section -->
         <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
@@ -61,7 +61,7 @@
             </div>
             <div class="text-right">
                 <p id="currentDate" class="font-medium text-gray-700"></p>
-                <p class="text-sm text-gray-500">Karachi, Sindh</p>
+                <p class="text-sm text-gray-500">karachi sindh</p>
             </div>
         </div>
         
@@ -69,7 +69,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-8">
             <div class="lg:col-span-3 bg-gray-50 p-6 rounded-xl border border-gray-200">
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">Naya Result Add Karein</h2>
-                <form id="resultForm" class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                <form id="resultForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label for="studentName" class="block text-sm font-medium text-gray-600 mb-1">Student ka Naam</label>
                         <input type="text" id="studentName" placeholder="Jaise: Anil Kumar" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
@@ -82,6 +82,15 @@
                             <option value="XII">XII</option>
                         </select>
                     </div>
+                     <div>
+                        <label for="degree" class="block text-sm font-medium text-gray-600 mb-1">Degree</label>
+                        <select id="degree" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
+                            <option value="" disabled selected>Select Degree</option>
+                            <option value="Pre Med">Pre-Medical</option>
+                            <option value="Pre Eng">Pre-Engineering</option>
+                            <option value="CS">Computer Science</option>
+                        </select>
+                    </div>
                     <div>
                         <label for="subject" class="block text-sm font-medium text-gray-600 mb-1">Subject</label>
                         <select id="subject" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
@@ -91,12 +100,13 @@
                     <div>
                         <label for="testType" class="block text-sm font-medium text-gray-600 mb-1">Test Type</label>
                         <select id="testType" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
+                            <option value="" disabled selected>Select Type</option>
                             <option value="Weekly Test">Weekly Test</option>
                             <option value="Monthly Test">Monthly Test</option>
                             <option value="Yearly Test">Yearly Test</option>
                         </select>
                     </div>
-                     <div>
+                    <div>
                         <label for="topicName" class="block text-sm font-medium text-gray-600 mb-1">Topic ka Naam</label>
                         <input type="text" id="topicName" placeholder="Jaise: Algebra" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
                     </div>
@@ -112,12 +122,13 @@
                         <label for="resultDate" class="block text-sm font-medium text-gray-600 mb-1">Date</label>
                         <input type="date" id="resultDate" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
                     </div>
-                    <div class="md:col-span-2">
+                    <div class="md:col-span-3 mt-2">
                         <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition duration-300">
                             <i data-lucide="plus-circle" class="w-5 h-5"></i> Add Result
                         </button>
                     </div>
                 </form>
+                <p id="errorMessage" class="text-red-500 text-sm mt-2 hidden">Please sabhi fields bharein.</p>
             </div>
 
             <div class="lg:col-span-2 bg-gray-50 p-6 rounded-xl border border-gray-200">
@@ -139,11 +150,17 @@
 
         <!-- Results Table Section -->
         <div class="overflow-x-auto">
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
                 <h2 class="text-xl font-semibold text-gray-700">Uploaded Results</h2>
-                <div class="flex flex-wrap items-center justify-center sm:justify-end gap-2">
-                    <input type="text" id="searchInput" placeholder="Student ke naam se khojein..." class="w-full sm:w-48 px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition">
-                    <button id="showFinalResultBtn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition flex items-center gap-2"><i data-lucide="award" class="w-5 h-5"></i> Final Results</button>
+                <div class="flex flex-wrap items-center gap-2">
+                    <input type="text" id="searchInput" placeholder="Student ke naam se khojein..." class="w-full md:w-auto px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition">
+                     <div id="testTypeFilters" class="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
+                        <button data-filter="All" class="filter-btn bg-blue-500 text-white font-semibold py-1 px-3 rounded-md transition">All</button>
+                        <button data-filter="Weekly Test" class="filter-btn bg-gray-200 text-gray-700 font-semibold py-1 px-3 rounded-md transition">Weekly</button>
+                        <button data-filter="Monthly Test" class="filter-btn bg-gray-200 text-gray-700 font-semibold py-1 px-3 rounded-md transition">Monthly</button>
+                        <button data-filter="Yearly Test" class="filter-btn bg-gray-200 text-gray-700 font-semibold py-1 px-3 rounded-md transition">Yearly</button>
+                    </div>
+                    <button id="showFinalResultBtn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition flex items-center gap-2"><i data-lucide="award" class="w-5 h-5"></i> Final</button>
                     <button id="exportPdfBtn" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5"></i> PDF</button>
                     <button id="exportExcelBtn" class="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 transition flex items-center gap-2"><i data-lucide="file-spreadsheet" class="w-5 h-5"></i> Excel</button>
                 </div>
@@ -154,8 +171,9 @@
                     <tr>
                         <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Student Naam</th>
                         <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Class</th>
-                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Subject</th>
+                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Degree</th>
                         <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Test Type</th>
+                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Subject</th>
                         <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Score</th>
                         <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Date</th>
                         <th class="text-center py-3 px-4 uppercase font-semibold text-sm">Actions</th>
@@ -171,26 +189,14 @@
     <div id="cardModal" class="modal-overlay"><div id="cardModalContainer" class="modal-container w-full max-w-2xl"></div></div>
     <div id="editModal" class="modal-overlay"><div id="editModalContainer" class="modal-container w-full max-w-lg"></div></div>
     <div id="finalResultModal" class="modal-overlay"><div id="finalResultModalContainer" class="modal-container w-full max-w-5xl"></div></div>
-    <div id="confirmModal" class="modal-overlay">
-        <div class="modal-container w-full max-w-sm">
-            <h3 id="confirmTitle" class="text-lg font-bold text-gray-800">Confirm Action</h3>
-            <p id="confirmMessage" class="text-gray-600 mt-2 mb-6">Are you sure?</p>
-            <div class="flex justify-end space-x-2">
-                <button id="confirmBtn" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700">Confirm</button>
-                <button id="cancelBtn" class="bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-400">Cancel</button>
-            </div>
-        </div>
-    </div>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
+            lucide.createIcons(); // Initialize icons
             
-            // --- Global Variables & Constants ---
-            const { jsPDF } = window.jspdf;
+            // Set current date in header
             document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
-            // Form & UI Elements
             const resultForm = document.getElementById('resultForm');
             const resultsTableBody = document.getElementById('resultsTableBody');
             const noResultsMessage = document.getElementById('noResultsMessage');
@@ -200,11 +206,13 @@
             const addSubjectBtn = document.getElementById('addSubjectBtn');
             const removeSubjectBtn = document.getElementById('removeSubjectBtn');
             const subjectError = document.getElementById('subjectError');
+            const testTypeFilters = document.getElementById('testTypeFilters');
 
             let currentResults = [];
             let subjects = [];
+            let currentFilter = 'All';
 
-            // --- Data Persistence (Local Storage) ---
+            // --- Data Persistence ---
             const saveResultsToLocal = () => localStorage.setItem('studentResults', JSON.stringify(currentResults));
             const loadResultsFromLocal = () => currentResults = JSON.parse(localStorage.getItem('studentResults')) || [];
             const saveSubjectsToLocal = () => localStorage.setItem('studentSubjects', JSON.stringify(subjects));
@@ -224,11 +232,18 @@
                 const remarks = { 'A+': 'Outstanding Performance.', 'A': 'Excellent Work.', 'B': 'Good Effort.', 'C': 'Satisfactory.', 'D': 'Needs Improvement.', 'F': 'Requires Serious Attention.' };
                 return remarks[grade] || 'N/A';
             };
+            const getFilteredResults = () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                const filteredByType = currentFilter === 'All' ? currentResults : currentResults.filter(r => r.testType === currentFilter);
+                return filteredByType.filter(r => r.studentName.toLowerCase().includes(searchTerm));
+            };
+
 
             // --- Rendering ---
             const renderResults = () => {
                 resultsTableBody.innerHTML = '';
-                const sorted = [...currentResults].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                const displayResults = getFilteredResults();
+                const sorted = [...displayResults].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
                 sorted.forEach(data => {
                     const row = resultsTableBody.insertRow();
                     row.dataset.id = data.id;
@@ -237,8 +252,9 @@
                     row.innerHTML = `
                         <td class="py-3 px-4 font-medium">${data.studentName}</td>
                         <td class="py-3 px-4">${data.studentClass}</td>
+                        <td class="py-3 px-4">${data.degree}</td>
+                        <td class="py-3 px-4">${data.testType}</td>
                         <td class="py-3 px-4">${data.subject}</td>
-                        <td class="py-3 px-4">${data.testType || 'N/A'}</td>
                         <td class="py-3 px-4">${data.score} / ${data.totalMarks} (${percentage}%)</td>
                         <td class="py-3 px-4">${new Date(data.resultDate).toLocaleDateString()}</td>
                         <td class="py-3 px-4">
@@ -250,34 +266,25 @@
                         </td>`;
                 });
                 lucide.createIcons();
-                noResultsMessage.classList.toggle('hidden', currentResults.length > 0);
-                 if (currentResults.length === 0) noResultsMessage.innerHTML = `<p>Abhi tak koi result upload nahi hua hai.</p>`
+                noResultsMessage.classList.toggle('hidden', displayResults.length > 0);
             };
 
             const populateSubjectDropdowns = () => {
                 const editSubjectEl = document.getElementById('editSubject');
                 [subjectSelect, editSubjectEl].forEach(selectEl => {
                     if (!selectEl) return;
-                    const currentValue = selectEl.value;
-                    selectEl.innerHTML = '<option value="" disabled>Select</option>';
+                    selectEl.innerHTML = '<option value="" disabled selected>Select</option>';
                     subjects.forEach(s => selectEl.innerHTML += `<option value="${s}">${s}</option>`);
-                    selectEl.value = currentValue;
-                     if (!selectEl.value) {
-                       selectEl.selectedIndex = 0;
-                    }
                 });
             };
 
-            // --- Subject Management (Local Storage) ---
+            // --- Subject Management ---
             addSubjectBtn.addEventListener('click', () => {
                 const newSubject = newSubjectInput.value.trim();
-                if (!newSubject) {
-                    subjectError.textContent = "Please enter a subject name.";
-                    subjectError.classList.remove('hidden'); return;
-                }
-                if (subjects.find(s => s.toLowerCase() === newSubject.toLowerCase())) {
-                     subjectError.textContent = "Subject already exists.";
-                     subjectError.classList.remove('hidden'); return;
+                if (!newSubject || subjects.find(s => s.toLowerCase() === newSubject.toLowerCase())) {
+                    subjectError.textContent = newSubject ? "Subject already exists." : "Please enter a subject name.";
+                    subjectError.classList.remove('hidden');
+                    return;
                 }
                 subjects.push(newSubject);
                 saveSubjectsToLocal();
@@ -290,7 +297,8 @@
                 const selected = subjectSelect.value;
                 if (!selected) {
                     subjectError.textContent = "Please select a subject to remove.";
-                    subjectError.classList.remove('hidden'); return;
+                    subjectError.classList.remove('hidden');
+                    return;
                 }
                 subjects = subjects.filter(s => s !== selected);
                 saveSubjectsToLocal();
@@ -298,15 +306,16 @@
                 subjectError.classList.add('hidden');
             });
             
-            // --- Add/Edit Result Forms (Local Storage) ---
+            // --- Add/Edit Result Forms ---
             resultForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const newResult = {
                     id: crypto.randomUUID(),
                     studentName: document.getElementById('studentName').value.trim(),
                     studentClass: document.getElementById('studentClass').value,
-                    subject: subjectSelect.value,
+                    degree: document.getElementById('degree').value,
                     testType: document.getElementById('testType').value,
+                    subject: subjectSelect.value,
                     topicName: document.getElementById('topicName').value.trim(),
                     score: parseInt(document.getElementById('score').value, 10),
                     totalMarks: parseInt(document.getElementById('totalMarks').value, 10),
@@ -318,9 +327,11 @@
                 renderResults();
                 resultForm.reset();
                 document.getElementById('studentClass').selectedIndex = 0;
+                document.getElementById('degree').selectedIndex = 0;
+                document.getElementById('testType').selectedIndex = 0;
                 subjectSelect.selectedIndex = 0;
             });
-            
+
             // --- Table Actions (View, Edit, Delete) ---
             resultsTableBody.addEventListener('click', (e) => {
                 const btn = e.target.closest('button');
@@ -328,101 +339,90 @@
                 const id = btn.dataset.id;
                 
                 if (btn.classList.contains('delete-btn')) {
-                    showConfirmationModal(
-                        'Delete Result',
-                        'Kya aap is result ko delete karna chahte hain? This action cannot be undone.',
-                        () => {
-                            currentResults = currentResults.filter(r => r.id !== id);
-                            saveResultsToLocal();
-                            renderResults();
-                        }
-                    );
-                } else if (btn.classList.contains('view-card-btn')) {
-                    const result = currentResults.find(r => r.id === id);
-                    if(result) {
-                        const studentResults = currentResults.filter(r => r.studentName.toLowerCase() === result.studentName.toLowerCase() && r.studentClass === result.studentClass);
-                        showResultCard(studentResults);
+                    if (confirm("Kya aap is result ko delete karna chahte hain?")) {
+                        currentResults = currentResults.filter(r => r.id !== id);
+                        saveResultsToLocal();
+                        renderResults();
                     }
+                } else if (btn.classList.contains('view-card-btn')) {
+                    const data = currentResults.find(r => r.id === id);
+                    if (data) showResultCard(data);
                 } else if (btn.classList.contains('edit-btn')) {
                     const data = currentResults.find(r => r.id === id);
                     if (data) showEditModal(data);
                 }
             });
 
-            // --- Consolidated Result Card ---
-            const createConsolidatedCardHTML = (results) => {
-                if (!results || results.length === 0) return '';
-                const student = results[0];
-                const totalScore = results.reduce((sum, r) => sum + r.score, 0);
-                const totalMarks = results.reduce((sum, r) => sum + r.totalMarks, 0);
-                const overallPercentage = totalMarks > 0 ? ((totalScore / totalMarks) * 100).toFixed(2) : 0;
-                const overallGrade = calculateGrade(overallPercentage);
+            // --- Professional Result Card ---
+            const createProfessionalCardHTML = (data) => {
+                const percentage = data.totalMarks > 0 ? ((data.score / data.totalMarks) * 100).toFixed(2) : 0;
+                const grade = calculateGrade(percentage);
                 const issueDate = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-
-                const resultsRowsHTML = results.map(data => {
-                    const percentage = data.totalMarks > 0 ? ((data.score / data.totalMarks) * 100).toFixed(2) : 0;
-                    return `
-                        <tr>
-                            <td class="border p-2">${data.subject}</td>
-                            <td class="border p-2">${data.testType}</td>
-                            <td class="border p-2">${data.topicName}</td>
-                            <td class="border p-2 text-center">${data.score}</td>
-                            <td class="border p-2 text-center">${data.totalMarks}</td>
-                            <td class="border p-2 text-center font-semibold">${percentage}%</td>
-                        </tr>`;
-                }).join('');
-
                 return `
                 <div class="p-8 border-2 border-gray-800 bg-white relative">
-                    <div class="absolute inset-0 flex items-center justify-center z-0"><p class="text-gray-200 text-8xl font-black select-none opacity-50">IBAGRADS</p></div>
+                    <div class="absolute inset-0 flex items-center justify-center z-0">
+                        <p class="text-gray-200 text-8xl font-black select-none opacity-50">PEI</p>
+                    </div>
                     <div class="relative z-10">
                         <div class="flex items-center justify-between pb-4 border-b-2 border-gray-800">
-                             <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
-                                <div><h3 class="text-xl font-bold text-gray-800">IBAGRADS XI-XII</h3><p class="text-sm font-medium text-gray-500">OFFICIAL RESULT CARD</p></div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-800">IBAGRADS XI-XII</h3>
+                                    <p class="text-sm font-medium text-gray-500">OFFICIAL RESULT CARD</p>
+                                </div>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-x-8 gap-y-4 my-6 text-sm">
-                            <p><strong>Student Name:</strong> ${student.studentName}</p>
-                            <p><strong>Class:</strong> ${student.studentClass}</p>
+                            <p class="col-span-2"><strong>Student Name:</strong> ${data.studentName}</p>
+                            <p><strong>Class:</strong> ${data.studentClass}</p>
+                            <p><strong>Degree Program:</strong> ${data.degree}</p>
+                             <p><strong>Test Type:</strong> ${data.testType}</p>
                             <p><strong>Date of Issue:</strong> ${issueDate}</p>
-                            <p><strong>Total Tests Taken:</strong> ${results.length}</p>
+                            <p><strong>Result ID:</strong> ${data.id.substring(0, 8).toUpperCase()}</p>
                         </div>
                         <table class="w-full text-sm border-collapse">
                             <thead class="bg-gray-100 text-gray-600">
                                 <tr>
                                     <th class="border p-2 text-left">Subject</th>
-                                    <th class="border p-2 text-left">Test Type</th>
                                     <th class="border p-2 text-left">Topic</th>
                                     <th class="border p-2 text-center">Score</th>
                                     <th class="border p-2 text-center">Total Marks</th>
                                     <th class="border p-2 text-center">Percentage</th>
                                 </tr>
                             </thead>
-                            <tbody>${resultsRowsHTML}</tbody>
+                            <tbody>
+                                <tr>
+                                    <td class="border p-2">${data.subject}</td>
+                                    <td class="border p-2">${data.topicName}</td>
+                                    <td class="border p-2 text-center">${data.score}</td>
+                                    <td class="border p-2 text-center">${data.totalMarks}</td>
+                                    <td class="border p-2 text-center font-semibold">${percentage}%</td>
+                                </tr>
+                            </tbody>
                         </table>
                         <div class="grid grid-cols-3 gap-4 mt-6 text-center bg-gray-50 p-4 rounded-lg">
-                            <div><p class="text-sm text-gray-600">Overall Percentage</p><p class="text-2xl font-bold text-blue-600">${overallPercentage}%</p></div>
-                            <div><p class="text-sm text-gray-600">Grade</p><p class="text-2xl font-bold text-blue-600">${overallGrade}</p></div>
-                            <div><p class="text-sm text-gray-600">Remarks</p><p class="text-lg font-semibold text-blue-600">${getRemarks(overallGrade)}</p></div>
+                            <div><p class="text-sm text-gray-600">Overall Percentage</p><p class="text-2xl font-bold text-blue-600">${percentage}%</p></div>
+                            <div><p class="text-sm text-gray-600">Grade</p><p class="text-2xl font-bold text-blue-600">${grade}</p></div>
+                            <div><p class="text-sm text-gray-600">Remarks</p><p class="text-lg font-semibold text-blue-600">${getRemarks(grade)}</p></div>
                         </div>
                         <div class="mt-12 pt-4 border-t text-center text-xs text-gray-500">
-                            <p>This is a computer-generated document. | IBAGRADS XI-XII, Karachi, Sindh, Pakistan</p>
+                            <p>This is a computer-generated document. | IBAGRADS XI-XII, karachi sindh, Pakistan</p>
                         </div>
                     </div>
                 </div>`;
             };
 
-            const showResultCard = (results) => {
+            const showResultCard = (data) => {
                 const container = document.getElementById('cardModalContainer');
                 container.innerHTML = `
-                    <div id="printableCard">${createConsolidatedCardHTML(results)}</div>
+                    <div id="printableCard">${createProfessionalCardHTML(data)}</div>
                     <div class="flex justify-end space-x-2 mt-4">
                         <button id="exportCardPdfBtn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition">Export PDF</button>
                         <button id="closeCardModalBtn" class="bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-400 transition">Band Karein</button>
                     </div>`;
                 document.getElementById('closeCardModalBtn').onclick = () => hideModal('cardModal');
-                document.getElementById('exportCardPdfBtn').onclick = () => exportToPdf(document.getElementById('printableCard'), `${results[0].studentName}_result.pdf`, 'portrait');
+                document.getElementById('exportCardPdfBtn').onclick = () => exportCardToPdf(document.getElementById('printableCard'), `${data.studentName}_result.pdf`);
                 showModal('cardModal');
             };
 
@@ -434,14 +434,22 @@
                 <form id="editForm">
                     <input type="hidden" id="editDocId" value="${data.id}">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label class="block text-sm font-medium">Naam</label><input type="text" id="editStudentName" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.studentName}" required></div>
-                        <div><label class="block text-sm font-medium">Class</label><select id="editStudentClass" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required><option value="XI">XI</option><option value="XII">XII</option></select></div>
-                        <div><label class="block text-sm font-medium">Subject</label><select id="editSubject" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required></select></div>
-                        <div><label class="block text-sm font-medium">Test Type</label><select id="editTestType" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required><option value="Weekly Test">Weekly Test</option><option value="Monthly Test">Monthly Test</option><option value="Yearly Test">Yearly Test</option></select></div>
-                        <div><label class="block text-sm font-medium">Topic</label><input type="text" id="editTopicName" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.topicName}" required></div>
-                        <div><label class="block text-sm font-medium">Score</label><input type="number" id="editScore" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.score}" required></div>
-                        <div><label class="block text-sm font-medium">Total Marks</label><input type="number" id="editTotalMarks" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.totalMarks}" required></div>
-                        <div><label class="block text-sm font-medium">Date</label><input type="date" id="editResultDate" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.resultDate}" required></div>
+                        <div><label for="editStudentName" class="block text-sm font-medium">Naam</label><input type="text" id="editStudentName" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.studentName}" required></div>
+                        <div><label for="editStudentClass" class="block text-sm font-medium">Class</label><select id="editStudentClass" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required><option value="XI">XI</option><option value="XII">XII</option></select></div>
+                        <div><label for="editDegree" class="block text-sm font-medium">Degree</label><select id="editDegree" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required><option value="Pre Med">Pre-Medical</option><option value="Pre Eng">Pre-Engineering</option><option value="CS">Computer Science</option></select></div>
+                        <div>
+                            <label for="editTestType" class="block text-sm font-medium">Test Type</label>
+                            <select id="editTestType" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required>
+                                <option value="Weekly Test">Weekly Test</option>
+                                <option value="Monthly Test">Monthly Test</option>
+                                <option value="Yearly Test">Yearly Test</option>
+                            </select>
+                        </div>
+                        <div><label for="editSubject" class="block text-sm font-medium">Subject</label><select id="editSubject" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required></select></div>
+                        <div><label for="editTopicName" class="block text-sm font-medium">Topic</label><input type="text" id="editTopicName" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.topicName}" required></div>
+                        <div><label for="editScore" class="block text-sm font-medium">Score</label><input type="number" id="editScore" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.score}" required></div>
+                        <div><label for="editTotalMarks" class="block text-sm font-medium">Total Marks</label><input type="number" id="editTotalMarks" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.totalMarks}" required></div>
+                        <div class="col-span-2"><label for="editResultDate" class="block text-sm font-medium">Date</label><input type="date" id="editResultDate" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.resultDate}" required></div>
                     </div>
                     <div class="flex justify-end space-x-2 mt-6">
                         <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Save Changes</button>
@@ -449,10 +457,11 @@
                     </div>
                 </form>`;
 
-                populateSubjectDropdowns();
+                populateSubjectDropdowns(); // Populate subjects in edit form
                 document.getElementById('editStudentClass').value = data.studentClass;
-                document.getElementById('editSubject').value = data.subject;
+                document.getElementById('editDegree').value = data.degree;
                 document.getElementById('editTestType').value = data.testType;
+                document.getElementById('editSubject').value = data.subject;
                 
                 document.getElementById('closeEditModalBtn').onclick = () => hideModal('editModal');
                 document.getElementById('editForm').onsubmit = (e) => {
@@ -460,12 +469,12 @@
                     const id = document.getElementById('editDocId').value;
                     const index = currentResults.findIndex(r => r.id === id);
                     if (index > -1) {
-                        currentResults[index] = {
-                            ...currentResults[index],
+                        currentResults[index] = { ...currentResults[index],
                             studentName: document.getElementById('editStudentName').value,
                             studentClass: document.getElementById('editStudentClass').value,
-                            subject: document.getElementById('editSubject').value,
+                            degree: document.getElementById('editDegree').value,
                             testType: document.getElementById('editTestType').value,
+                            subject: document.getElementById('editSubject').value,
                             topicName: document.getElementById('editTopicName').value,
                             score: parseInt(document.getElementById('editScore').value, 10),
                             totalMarks: parseInt(document.getElementById('editTotalMarks').value, 10),
@@ -478,198 +487,226 @@
                 };
                 showModal('editModal');
             };
-            
-            // --- Confirmation Modal ---
-            const showConfirmationModal = (title, message, onConfirm) => {
-                document.getElementById('confirmTitle').textContent = title;
-                document.getElementById('confirmMessage').textContent = message;
 
-                const confirmBtn = document.getElementById('confirmBtn');
-                const cancelBtn = document.getElementById('cancelBtn');
-
-                const confirmHandler = () => { onConfirm(); cleanup(); };
-                const cancelHandler = () => cleanup();
-                
-                const cleanup = () => {
-                    hideModal('confirmModal');
-                    confirmBtn.removeEventListener('click', confirmHandler);
-                    cancelBtn.removeEventListener('click', cancelHandler);
-                };
-
-                confirmBtn.addEventListener('click', confirmHandler);
-                cancelBtn.addEventListener('click', cancelHandler);
-                
-                showModal('confirmModal');
-            };
-
-            // --- Final Results Modal & Logic ---
-            const renderFinalResults = (classFilter = 'All') => {
-                const finalResultTableBody = document.querySelector('#finalResultTable tbody');
-                if (!finalResultTableBody) return;
-
-                const groupedResults = currentResults.reduce((acc, result) => {
-                    const key = `${result.studentName.toLowerCase()}_${result.studentClass}`;
-                    if (!acc[key]) {
-                        acc[key] = { studentName: result.studentName, studentClass: result.studentClass, totalScore: 0, totalMarks: 0 };
-                    }
-                    acc[key].totalScore += result.score;
-                    acc[key].totalMarks += result.totalMarks;
-                    return acc;
-                }, {});
-
-                let resultsArray = Object.values(groupedResults);
-                if (classFilter !== 'All') {
-                    resultsArray = resultsArray.filter(r => r.studentClass === classFilter);
-                }
-                
-                resultsArray.forEach(r => {
-                    r.percentage = r.totalMarks > 0 ? ((r.totalScore / r.totalMarks) * 100).toFixed(2) : 0;
-                });
-                resultsArray.sort((a, b) => b.percentage - a.percentage);
-
-                finalResultTableBody.innerHTML = resultsArray.map(data => {
-                    const grade = calculateGrade(data.percentage);
-                    return `<tr class="hover:bg-gray-50">
-                        <td class="py-3 px-4 font-medium">${data.studentName}</td>
-                        <td class="py-3 px-4">${data.studentClass}</td>
-                        <td class="py-3 px-4">${data.totalScore}</td>
-                        <td class="py-3 px-4">${data.totalMarks}</td>
-                        <td class="py-3 px-4 font-semibold text-blue-600">${data.percentage}%</td>
-                        <td class="py-3 px-4">${grade}</td>
-                    </tr>`;
-                }).join('');
-            };
-
+            // --- Final Results Modal ---
             document.getElementById('showFinalResultBtn').addEventListener('click', () => {
                 const container = document.getElementById('finalResultModalContainer');
                 container.innerHTML = `
-                <div id="printableFinalResults" class="p-4 sm:p-6 bg-white rounded-lg">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 border-b">
-                         <div>
-                            <h2 class="text-2xl font-bold text-gray-800">Final Consolidated Results</h2>
-                            <p class="text-sm text-gray-500">Summary of student performance</p>
+                    <div id="printableFinalResults">
+                        <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
+                             <h2 class="text-2xl font-semibold text-gray-700">Final Consolidated Results</h2>
+                             <div id="finalResultFilters" class="flex justify-start space-x-2">
+                                <button data-filter="XI" class="filter-btn bg-gray-500 text-white font-semibold py-1 px-3 rounded-lg hover:bg-gray-600 transition">XI</button>
+                                <button data-filter="XII" class="filter-btn bg-gray-500 text-white font-semibold py-1 px-3 rounded-lg hover:bg-gray-600 transition">XII</button>
+                                <button data-filter="All" class="filter-btn bg-blue-500 text-white font-semibold py-1 px-3 rounded-lg hover:bg-blue-600 transition">All</button>
+                            </div>
                         </div>
-                         <div id="finalResultFilters" class="flex items-center space-x-2 mt-4 sm:mt-0">
-                            <button data-filter="XI" class="filter-btn bg-gray-200 text-gray-700 font-semibold py-1 px-3 rounded-md hover:bg-gray-300 transition text-sm">Class XI</button>
-                            <button data-filter="XII" class="filter-btn bg-gray-200 text-gray-700 font-semibold py-1 px-3 rounded-md hover:bg-gray-300 transition text-sm">Class XII</button>
-                            <button data-filter="All" class="filter-btn bg-blue-600 text-white font-semibold py-1 px-3 rounded-md transition text-sm">All Classes</button>
-                        </div>
+                        <div class="overflow-x-auto"><table id="finalResultTable" class="min-w-full bg-white rounded-lg shadow-md overflow-hidden"><thead class="bg-gray-100">...</thead><tbody class="divide-y"></tbody></table></div>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table id="finalResultTable" class="min-w-full bg-white">
-                            <thead class="bg-gray-100 text-gray-600">
-                                <tr>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Student</th><th class="text-left py-3 px-4 uppercase font-semibold text-sm">Class</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Score</th><th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Marks</th>
-                                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Percentage</th><th class="text-left py-3 px-4 uppercase font-semibold text-sm">Grade</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200"></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="flex justify-end space-x-2 mt-6">
-                    <button id="exportFinalResultPdfBtn" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 flex items-center gap-2"><i data-lucide="file-text" class="w-4 h-4"></i>Export PDF</button>
-                    <button id="closeFinalResultModalBtn" class="bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-400">Band Karein</button>
-                </div>`;
-                
-                lucide.createIcons();
-                renderFinalResults('All');
+                    <div class="flex justify-end space-x-2 mt-6">
+                        <button id="exportFinalResultPdfBtn" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700">Export PDF</button>
+                        <button id="closeFinalResultModalBtn" class="bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-400">Band Karein</button>
+                    </div>`;
 
-                container.querySelector('#finalResultFilters').addEventListener('click', (e) => {
+                const table = container.querySelector('#finalResultTable');
+                table.querySelector('thead').innerHTML = `<tr>
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Student</th><th class="text-left py-3 px-4 uppercase font-semibold text-sm">Class</th>
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Degree</th>
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Score</th><th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Marks</th>
+                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Percentage</th><th class="text-left py-3 px-4 uppercase font-semibold text-sm">Grade</th></tr>`;
+
+                const renderFinalTable = (filter = 'All') => {
+                    const summaries = {};
+                    const filtered = currentResults.filter(r => filter === 'All' || r.studentClass === filter);
+                    filtered.forEach(r => {
+                        const key = `${r.studentName}-${r.studentClass}-${r.degree}`;
+                        if (!summaries[key]) summaries[key] = { name: r.studentName, class: r.studentClass, degree: r.degree, totalScore: 0, totalMarks: 0 };
+                        summaries[key].totalScore += r.score;
+                        summaries[key].totalMarks += r.totalMarks;
+                    });
+                    
+                    const tbody = table.querySelector('tbody');
+                    tbody.innerHTML = '';
+                    Object.values(summaries).forEach(s => {
+                        const p = s.totalMarks > 0 ? (s.totalScore / s.totalMarks * 100).toFixed(2) : 0;
+                        const g = calculateGrade(p);
+                        tbody.innerHTML += `<tr>
+                            <td class="p-3">${s.name}</td><td class="p-3">${s.class}</td><td class="p-3">${s.degree}</td>
+                            <td class="p-3">${s.totalScore}</td><td class="p-3">${s.totalMarks}</td>
+                            <td class="p-3 font-semibold">${p}%</td><td class="p-3 font-bold">${g}</td></tr>`;
+                    });
+                };
+
+                container.querySelector('#finalResultFilters').onclick = (e) => {
                     if (e.target.matches('.filter-btn')) {
                         const filter = e.target.dataset.filter;
-                        renderFinalResults(filter);
-                        container.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('bg-blue-600', 'text-white'));
-                        e.target.classList.add('bg-blue-600', 'text-white');
+                        renderFinalTable(filter);
+                        container.querySelectorAll('.filter-btn').forEach(b => b.classList.replace('bg-blue-500', 'bg-gray-500'));
+                        e.target.classList.replace('bg-gray-500', 'bg-blue-500');
                     }
-                });
+                };
 
                 document.getElementById('closeFinalResultModalBtn').onclick = () => hideModal('finalResultModal');
-                document.getElementById('exportFinalResultPdfBtn').onclick = () => exportToPdf(document.getElementById('printableFinalResults'), 'final_results.pdf');
+                document.getElementById('exportFinalResultPdfBtn').onclick = () => exportTableToPdf(document.getElementById('printableFinalResults'), 'final_results.pdf', 'Final Consolidated Results');
+                
+                renderFinalTable();
                 showModal('finalResultModal');
             });
+            
+            // --- Single Card PDF Export (Fit to page) ---
+            const exportCardToPdf = (element, filename) => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
 
-            // --- Export Functions ---
-            const exportToPdf = (element, filename, orientation = 'landscape') => {
-                if (!element) return;
-                element.classList.add('printable-background');
-                html2canvas(element, { scale: 2, useCORS: true, logging: false }).then(canvas => {
-                    element.classList.remove('printable-background');
+                html2canvas(element, { scale: 3, useCORS: true }).then(canvas => { // Increased scale for better quality
                     const imgData = canvas.toDataURL('image/png');
-                    const imgWidth = canvas.width;
-                    const imgHeight = canvas.height;
+                    const imgProps = doc.getImageProperties(imgData);
+                    
+                    const pdfWidth = doc.internal.pageSize.getWidth();
+                    const pdfHeight = doc.internal.pageSize.getHeight();
+                    
+                    const margin = 15; // 15mm margin on all sides
+                    
+                    const availableWidth = pdfWidth - (margin * 2);
+                    const availableHeight = pdfHeight - (margin * 2);
+                    
+                    const imgAspectRatio = imgProps.width / imgProps.height;
+                    
+                    let finalImgWidth, finalImgHeight;
 
-                    const pdf = new jsPDF({ orientation: orientation, unit: 'pt', format: 'a4' });
-                    const pdfWidth = pdf.internal.pageSize.getWidth();
-                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                    // Calculate final dimensions to fit within the available space while maintaining aspect ratio
+                    if (imgProps.width > imgProps.height) { // Landscape-like image
+                        finalImgWidth = availableWidth;
+                        finalImgHeight = finalImgWidth / imgAspectRatio;
+                        if (finalImgHeight > availableHeight) {
+                           finalImgHeight = availableHeight;
+                           finalImgWidth = finalImgHeight * imgAspectRatio;
+                        }
+                    } else { // Portrait-like image
+                        finalImgHeight = availableHeight;
+                        finalImgWidth = finalImgHeight * imgAspectRatio;
+                        if (finalImgWidth > availableWidth) {
+                            finalImgWidth = availableWidth;
+                            finalImgHeight = finalImgWidth / imgAspectRatio;
+                        }
+                    }
 
-                    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-                    const newImgWidth = imgWidth * ratio;
-                    const newImgHeight = imgHeight * ratio;
+                    // Center the image
+                    const x = margin + (availableWidth - finalImgWidth) / 2;
+                    const y = margin + (availableHeight - finalImgHeight) / 2;
 
-                    const x = (pdfWidth - newImgWidth) / 2;
-                    const y = (pdfHeight - newImgHeight) / 2;
-
-                    pdf.addImage(imgData, 'PNG', x, y, newImgWidth, newImgHeight);
-                    pdf.save(filename);
-                }).catch(err => {
-                    console.error("PDF generation error:", err);
-                    element.classList.remove('printable-background');
-                });
-            };
-
-            const exportToExcel = () => {
-                if (currentResults.length === 0) return;
-                const headers = ['Student Name', 'Class', 'Subject', 'Test Type', 'Topic', 'Score', 'Total Marks', 'Percentage', 'Grade', 'Date'];
-                const rows = currentResults.map(res => {
-                    const percentage = res.totalMarks > 0 ? ((res.score / res.totalMarks) * 100).toFixed(2) : 'N/A';
-                    const values = [ res.studentName, res.studentClass, res.subject, res.testType, res.topicName, res.score, res.totalMarks, `${percentage}%`, calculateGrade(percentage), new Date(res.resultDate).toLocaleDateString() ];
-                    return values.map(val => `"${String(val).replace(/"/g, '""')}"`).join(',');
-                });
-                const csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + '\n' + rows.join('\n');
-                const link = document.createElement("a");
-                link.setAttribute("href", encodeURI(csvContent));
-                link.setAttribute("download", "student_results.csv");
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            };
-            document.getElementById('exportPdfBtn').addEventListener('click', () => exportToPdf(document.getElementById('resultsTable'), 'all_results.pdf'));
-            document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
-
-            // --- Search ---
-            searchInput.addEventListener('input', (e) => {
-                const searchTerm = e.target.value.toLowerCase();
-                const rows = resultsTableBody.getElementsByTagName('tr');
-                let resultsFound = false;
-                for (let row of rows) {
-                    const isVisible = row.dataset.studentName.includes(searchTerm);
-                    row.style.display = isVisible ? '' : 'none';
-                    if (isVisible) resultsFound = true;
-                }
-                const hasResults = currentResults.length > 0;
-                noResultsMessage.classList.toggle('hidden', searchTerm ? resultsFound : hasResults);
-                if (!resultsFound && searchTerm) noResultsMessage.innerHTML = `<p>No results found for "${e.target.value}".</p>`;
-                else if (hasResults === false) noResultsMessage.innerHTML = `<p>Abhi tak koi result upload nahi hua hai.</p>`;
-            });
-
-            // --- Close Modals on Overlay Click ---
-            document.querySelectorAll('.modal-overlay').forEach(modal => {
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) hideModal(modal.id);
-                });
-            });
-
-            // --- Initial App Load ---
-            const initializeApp = () => {
-                loadResultsFromLocal();
-                loadSubjectsFromLocal();
-                renderResults();
-                populateSubjectDropdowns();
+                    doc.addImage(imgData, 'PNG', x, y, finalImgWidth, finalImgHeight);
+                    doc.save(filename);
+                }).catch(e => console.error("Error creating card PDF:", e));
             };
             
-            initializeApp();
+            // --- Multi-page Table PDF Export ---
+            const exportTableToPdf = async (element, filename, title = 'Student Results') => {
+                 const { jsPDF } = window.jspdf;
+                 const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+                
+                 html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+                     const imgData = canvas.toDataURL('image/png');
+                     const contentWidth = 267; // A4 landscape width (297) - margins (15*2)
+                     const pageHeight = 180; // A4 landscape height (210) - margins for header/footer
+                     const imgHeight = canvas.height * contentWidth / canvas.width;
+                     let heightLeft = imgHeight;
+                     let position = 30; // Initial y position
+
+                     const addHeadersAndFooters = () => {
+                        for (let i = 1; i <= doc.internal.getNumberOfPages(); i++) {
+                            doc.setPage(i);
+                            // Header
+                            doc.setFontSize(18);
+                            doc.setFont('helvetica', 'bold');
+                            doc.text('IBAGRADS XI-XII', 15, 15);
+                            doc.setFontSize(12);
+                            doc.setFont('helvetica', 'normal');
+                            doc.text(title, 15, 22);
+                            doc.setLineWidth(0.5);
+                            doc.line(15, 25, 282, 25);
+                            // Footer
+                            doc.setFontSize(8);
+                            doc.text(`Generated on: ${new Date().toLocaleString()}`, 15, 200);
+                            doc.text(`Page ${i} of ${doc.internal.getNumberOfPages()}`, 260, 200);
+                        }
+                     };
+
+                     doc.addImage(imgData, 'PNG', 15, position, contentWidth, imgHeight);
+                     heightLeft -= pageHeight;
+
+                     while (heightLeft > 0) {
+                        position = position - 180; // Move up for the next slice
+                        doc.addPage();
+                        doc.addImage(imgData, 'PNG', 15, position, contentWidth, imgHeight);
+                        heightLeft -= pageHeight;
+                     }
+                     
+                     addHeadersAndFooters();
+                     doc.save(filename);
+                 }).catch(e => console.error("Error creating PDF:", e));
+            };
+            
+            // --- Excel Export ---
+            document.getElementById('exportExcelBtn').addEventListener('click', () => {
+                const resultsToExport = getFilteredResults();
+                let csv = 'Student Naam,Class,Degree,Test Type,Subject,Topic,Score,Total Marks,Percentage,Date\n';
+                resultsToExport.forEach(r => {
+                    const p = r.totalMarks > 0 ? (r.score / r.totalMarks * 100).toFixed(2) : 'N/A';
+                    csv += `"${r.studentName}","${r.studentClass}","${r.degree}","${r.testType}","${r.subject}","${r.topicName}","${r.score}","${r.totalMarks}","${p}%","${r.resultDate}"\n`;
+                });
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `student_results_${currentFilter}.csv`;
+                link.click();
+            });
+
+            // Main table PDF export
+            document.getElementById('exportPdfBtn').addEventListener('click', () => {
+                const tempTable = document.createElement('table');
+                tempTable.className = 'min-w-full bg-white';
+                tempTable.innerHTML = document.getElementById('resultsTable').innerHTML;
+                tempTable.querySelector('tbody').innerHTML = ''; // Clear body
+
+                const resultsToExport = getFilteredResults();
+                resultsToExport.forEach(data => {
+                     const percentage = data.totalMarks > 0 ? ((data.score / data.totalMarks) * 100).toFixed(2) : 'N/A';
+                     tempTable.querySelector('tbody').innerHTML += `
+                        <tr class="border-b"><td class="py-2 px-3">${data.studentName}</td><td class="py-2 px-3">${data.studentClass}</td>
+                        <td class="py-2 px-3">${data.degree}</td><td class="py-2 px-3">${data.testType}</td>
+                        <td class="py-2 px-3">${data.subject}</td><td class="py-2 px-3">${data.score}/${data.totalMarks}</td>
+                        <td class="py-2 px-3">${new Date(data.resultDate).toLocaleDateString()}</td><td></td></tr>`;
+                });
+                document.body.appendChild(tempTable); // Must be in DOM for html2canvas
+                exportTableToPdf(tempTable, `results_${currentFilter}.pdf`, `Uploaded Results (${currentFilter})`);
+                document.body.removeChild(tempTable);
+            });
+
+
+            // --- Search and Filter ---
+            searchInput.addEventListener('keyup', renderResults);
+            testTypeFilters.addEventListener('click', (e) => {
+                const btn = e.target.closest('.filter-btn');
+                if (!btn) return;
+                currentFilter = btn.dataset.filter;
+                
+                // Update button styles
+                testTypeFilters.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('bg-blue-500', 'text-white');
+                    b.classList.add('bg-gray-200', 'text-gray-700');
+                });
+                btn.classList.add('bg-blue-500', 'text-white');
+                btn.classList.remove('bg-gray-200', 'text-gray-700');
+
+                renderResults();
+            });
+
+            // --- Initial Load ---
+            loadSubjectsFromLocal();
+            loadResultsFromLocal();
+            populateSubjectDropdowns();
+            renderResults();
         });
     </script>
 </body>
