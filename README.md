@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en" class=""> <!-- 'dark' class will be toggled here -->
 <head>
   <meta charset="utf-8" />
@@ -118,7 +117,9 @@
             </button>
         </div>
         <!-- Logo -->
-        <img src="https://iili.io/KTdjGbj.png" alt="IBA Grads Logo" class="mx-auto h-16 sm:h-20 w-auto mb-4 rounded-full">
+        <a href="https://ibagrads.com/" target="_blank" rel="noopener noreferrer" title="Visit IBAGrads Website">
+          <img src="https://iili.io/KTdjGbj.png" alt="IBA Grads Logo" class="mx-auto h-16 sm:h-20 w-auto mb-4 rounded-full">
+        </a>
         <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-navy-800 educational-header">O/A Level Equivalence Calculator</h1>
         <p class="mt-2 text-sm sm:text-base text-navy-600">Enter your grades below to instantly estimate your Pakistani equivalence.</p>
     </header>
@@ -490,5 +491,6 @@
   </script>
 </body>
 </html>
+
 
 
