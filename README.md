@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en" class=""> <!-- 'dark' class will be toggled here -->
 <head>
   <meta charset="utf-8" />
@@ -116,8 +117,8 @@
                 <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-300 hidden dark:block"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
             </button>
         </div>
-        <!-- Thematic icon representing 'equivalence' -->
-        <img src="https://iili.io/KTdjGbj.png" alt="Site Logo" class="mx-auto h-16 sm:h-20 w-auto mb-4 rounded-full no-print">
+        <!-- Logo -->
+        <img src="https://iili.io/KTdjGbj.png" alt="IBA Grads Logo" class="mx-auto h-16 sm:h-20 w-auto mb-4 rounded-full">
         <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-navy-800 educational-header">O/A Level Equivalence Calculator</h1>
         <p class="mt-2 text-sm sm:text-base text-navy-600">Enter your grades below to instantly estimate your Pakistani equivalence.</p>
     </header>
@@ -489,6 +490,5 @@
   </script>
 </body>
 </html>
-
 
 
