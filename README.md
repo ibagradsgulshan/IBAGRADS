@@ -1,723 +1,494 @@
-<html lang="en">
+<html lang="en" class=""> <!-- 'dark' class will be toggled here -->
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Result Manager (Professional)</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- PDF Generation Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
-            background-image: url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2728&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }
-        .main-container {
-            background-color: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px);
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 1000; opacity: 0; visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-        .modal-container {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
-            max-height: 90vh;
-            overflow-y: auto;
-            transform: scale(0.95);
-            transition: transform 0.3s ease;
-        }
-        .modal-overlay.active .modal-container { transform: scale(1); }
-    </style>
-</head>
-<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4 sm:p-6">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>O/A Level Equivalence Calculator — Pakistan</title>
 
-    <div class="w-full max-w-7xl mx-auto main-container rounded-2xl shadow-xl p-6 sm:p-8">
-        
-        <!-- Header Section -->
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 pb-4 border-b border-gray-200">
-            <div class="flex items-center gap-4">
-                <div class="bg-blue-100 p-3 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800">IBAGRADS XI-XII</h1>
-                    <p class="text-sm text-gray-500">Student Result Management System</p>
-                </div>
-            </div>
-            <div class="text-left md:text-right mt-4 md:mt-0">
-                <p id="currentDate" class="font-medium text-gray-700"></p>
-                <p class="text-sm text-gray-500">karachi sindh</p>
-            </div>
-        </div>
-        
-        <!-- Form & Subject Management in a Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-8">
-            <div class="lg:col-span-3 bg-gray-50 p-6 rounded-xl border border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Naya Result Add Karein</h2>
-                <form id="resultForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label for="studentName" class="block text-sm font-medium text-gray-600 mb-1">Student ka Naam</label>
-                        <input type="text" id="studentName" placeholder="Jaise: Anil Kumar" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
-                    </div>
-                    <div>
-                        <label for="studentClass" class="block text-sm font-medium text-gray-600 mb-1">Class</label>
-                        <select id="studentClass" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
-                            <option value="" disabled selected>Select Class</option>
-                            <option value="XI">XI</option>
-                            <option value="XII">XII</option>
-                        </select>
-                    </div>
-                     <div>
-                        <label for="degree" class="block text-sm font-medium text-gray-600 mb-1">Degree</label>
-                        <select id="degree" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
-                            <option value="" disabled selected>Select Degree</option>
-                            <option value="Pre Med">Pre-Medical</option>
-                            <option value="Pre Eng">Pre-Engineering</option>
-                            <option value="CS">Computer Science</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="subject" class="block text-sm font-medium text-gray-600 mb-1">Subject</label>
-                        <select id="subject" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
-                            <option value="" disabled selected>Select a Subject</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="testType" class="block text-sm font-medium text-gray-600 mb-1">Test Type</label>
-                        <select id="testType" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
-                            <option value="" disabled selected>Select Type</option>
-                            <option value="Weekly Test">Weekly Test</option>
-                            <option value="Monthly Test">Monthly Test</option>
-                            <option value="Yearly Test">Yearly Test</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="topicName" class="block text-sm font-medium text-gray-600 mb-1">Topic ka Naam</label>
-                        <input type="text" id="topicName" placeholder="Jaise: Algebra" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
-                    </div>
-                    <div>
-                        <label for="score" class="block text-sm font-medium text-gray-600 mb-1">Score</label>
-                        <input type="number" id="score" placeholder="Jaise: 85" min="0" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
-                    </div>
-                    <div>
-                        <label for="totalMarks" class="block text-sm font-medium text-gray-600 mb-1">Total Marks</label>
-                        <input type="number" id="totalMarks" value="100" min="1" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
-                    </div>
-                    <div>
-                        <label for="resultDate" class="block text-sm font-medium text-gray-600 mb-1">Date</label>
-                        <input type="date" id="resultDate" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition" required>
-                    </div>
-                    <div class="md:col-span-3 mt-2">
-                        <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition duration-300">
-                            <i data-lucide="plus-circle" class="w-5 h-5"></i> Add Result
-                        </button>
-                    </div>
-                </form>
-                <p id="errorMessage" class="text-red-500 text-sm mt-2 hidden">Please sabhi fields bharein.</p>
-            </div>
+  <!-- Tailwind via CDN for quick styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-            <div class="lg:col-span-2 bg-gray-50 p-6 rounded-xl border border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Subjects Manage Karein</h2>
-                <div class="space-y-4">
-                    <input type="text" id="newSubjectInput" placeholder="Naya Subject Add Karein" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition">
-                    <div class="flex flex-col sm:flex-row gap-2">
-                        <button id="addSubjectBtn" class="w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 flex items-center justify-center gap-2 transition duration-300">
-                            <i data-lucide="plus" class="w-5 h-5"></i> Add
-                        </button>
-                        <button id="removeSubjectBtn" class="w-full bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 flex items-center justify-center gap-2 transition duration-300">
-                           <i data-lucide="trash-2" class="w-5 h-5"></i> Remove
-                        </button>
-                    </div>
-                </div>
-                 <p id="subjectError" class="text-red-600 text-sm mt-2 hidden"></p>
-            </div>
-        </div>
+  <!-- Google Fonts: Inter & a serif font for headings -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lora:wght@700&display=swap" rel="stylesheet">
 
-        <!-- Results Table Section -->
-        <div class="overflow-x-auto">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
-                <h2 class="text-xl font-semibold text-gray-700">Uploaded Results</h2>
-                <div class="flex flex-wrap items-center gap-2">
-                    <input type="text" id="searchInput" placeholder="Student ke naam se khojein..." class="w-full md:w-auto px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition">
-                     <div id="testTypeFilters" class="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
-                        <button data-filter="All" class="filter-btn bg-blue-500 text-white font-semibold py-1 px-3 rounded-md transition">All</button>
-                        <button data-filter="Weekly Test" class="filter-btn bg-gray-200 text-gray-700 font-semibold py-1 px-3 rounded-md transition">Weekly</button>
-                        <button data-filter="Monthly Test" class="filter-btn bg-gray-200 text-gray-700 font-semibold py-1 px-3 rounded-md transition">Monthly</button>
-                        <button data-filter="Yearly Test" class="filter-btn bg-gray-200 text-gray-700 font-semibold py-1 px-3 rounded-md transition">Yearly</button>
-                    </div>
-                    <button id="showFinalResultBtn" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition flex items-center gap-2"><i data-lucide="award" class="w-5 h-5"></i> Final</button>
-                    <button id="exportPdfBtn" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5"></i> PDF</button>
-                    <button id="exportExcelBtn" class="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 transition flex items-center gap-2"><i data-lucide="file-spreadsheet" class="w-5 h-5"></i> Excel</button>
-                </div>
-            </div>
+  <style>
+    /* Custom styles for a polished, educational look */
+    body { 
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+      /* Light mode background */
+      background-color: #f5f3f0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23d1d5db' fill-opacity='0.1'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      transition: background-color 0.3s ease;
+    }
+    .educational-header { font-family: 'Lora', serif; }
 
-            <table id="resultsTable" class="min-w-full bg-white rounded-lg shadow-md overflow-hidden">
-                <thead class="bg-gray-100 text-gray-600">
-                    <tr>
-                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Student Naam</th>
-                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Class</th>
-                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Degree</th>
-                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Test Type</th>
-                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Subject</th>
-                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Score</th>
-                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Date</th>
-                        <th class="text-center py-3 px-4 uppercase font-semibold text-sm">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="resultsTableBody" class="text-gray-700 divide-y divide-gray-200"></tbody>
-            </table>
-            <div id="noResultsMessage" class="text-center py-10 text-gray-500 hidden"><p>Abhi tak koi result upload nahi hua hai.</p></div>
-        </div>
-    </div>
+    /* Dark mode styles */
+    .dark body { 
+      background-color: #0d132a; /* Dark navy */
+      background-image: 
+        linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%231e293b' fill-opacity='0.4'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .dark .glass {
+      background: rgba(13, 19, 42, 0.7); /* Darker navy glass */
+      backdrop-filter: blur(12px); 
+      -webkit-backdrop-filter: blur(12px); 
+      border-color: rgba(40, 53, 147, 0.5);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    }
+    .dark .text-gray-800 { color: #e8e6e1; } /* Light cream */
+    .dark .educational-header, .dark .text-navy-800 { color: #a3b2f8; } /* Light indigo */
+    .dark .text-navy-600 { color: #c5cae9; } /* Lighter indigo */
+    .dark .text-navy-900 { color: #e8eaf6; } /* Almost white indigo */
+    .dark .text-gray-600 { color: #9e9e9e; }
+    .dark .text-gray-700 { color: #bdbdbd; }
+    .dark .border-gray-300 { border-color: #3949ab; } /* Indigo border */
+    .dark input, .dark select { 
+        background-color: #1a237e; /* Dark indigo */
+        color: #e8eaf6; 
+        border-color: #3949ab;
+    }
+    .dark input::placeholder { color: #9fa8da; }
+    .dark .bg-gray-200 { background-color: #283593; } /* Mid indigo */
+    .dark .hover\:bg-gray-300:hover { background-color: #303f9f; }
+    .dark .bg-white\/80 { background-color: rgba(26, 35, 126, 0.8); }
 
-    <!-- Modals -->
-    <div id="cardModal" class="modal-overlay"><div id="cardModalContainer" class="modal-container w-full max-w-2xl"></div></div>
-    <div id="editModal" class="modal-overlay"><div id="editModalContainer" class="modal-container w-full max-w-lg"></div></div>
-    <div id="finalResultModal" class="modal-overlay"><div id="finalResultModalContainer" class="modal-container w-full max-w-5xl"></div></div>
+    .glass { 
+      background: rgba(255, 255, 255, 0.7); 
+      backdrop-filter: blur(10px); 
+      -webkit-backdrop-filter: blur(10px); 
+      box-shadow: 0 8px 32px 0 rgba(40, 53, 147, 0.1);
+      border-radius: 1rem; 
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
     
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons(); // Initialize icons
+    label { font-weight: 600; }
+    
+    .fade-in { animation: fadeIn 0.5s ease-out both; }
+    .slide-down { animation: slideDown 0.4s ease-out both; }
+    
+    @keyframes fadeIn { 
+      from { opacity: 0; transform: translateY(8px); } 
+      to { opacity: 1; transform: translateY(0); } 
+    }
+    @keyframes slideDown { 
+      from { opacity: 0; transform: translateY(-10px); } 
+      to { opacity: 1; transform: translateY(0); } 
+    }
+
+    .modal-overlay { transition: opacity 0.2s ease-in-out; }
+    .modal-box { transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out; }
+    .modal-hidden .modal-overlay { opacity: 0; }
+    .modal-hidden .modal-box { transform: scale(0.95); opacity: 0; }
+    
+    @media print {
+      body { background: white; }
+      .no-print { display: none !important; }
+      .glass { box-shadow: none; border: 1px solid #ccc; background: white; }
+      #resultCard, #infoSection { display: block !important; }
+      html, body { height: auto; }
+      .print-header { display: block !important; text-align: center; margin-bottom: 2rem; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 md:p-6 text-gray-800">
+
+  <!-- Custom Modal -->
+  <div id="customModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-hidden pointer-events-none">
+    <div class="modal-overlay fixed inset-0 bg-black bg-opacity-50"></div>
+    <div class="modal-box bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-sm text-center transform">
+        <h3 id="modalTitle" class="text-lg font-bold text-navy-800 dark:text-indigo-300 mb-4 educational-header">Notification</h3>
+        <p id="modalMessage" class="text-gray-700 dark:text-slate-300 mb-6"></p>
+        <button id="modalCloseBtn" class="px-6 py-2 bg-navy-700 text-white rounded-lg hover:bg-navy-800 transition-colors">OK</button>
+    </div>
+  </div>
+
+  <main class="w-full max-w-4xl mx-auto space-y-8">
+    <header class="text-center fade-in relative">
+        <div class="absolute top-0 right-0 p-2 sm:p-4 flex items-center gap-2">
             
-            // Set current date in header
-            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+            <button id="darkModeToggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors no-print" title="Toggle Dark Mode">
+                <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-navy-800 dark:hidden"><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/><circle cx="12" cy="12" r="5"/></svg>
+                <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-300 hidden dark:block"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            </button>
+        </div>
+        <!-- Thematic icon representing 'equivalence' -->
+        <img src="https://iili.io/KTdjGbj.png" alt="Site Logo" class="mx-auto h-16 sm:h-20 w-auto mb-4 rounded-full no-print">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-navy-800 educational-header">O/A Level Equivalence Calculator</h1>
+        <p class="mt-2 text-sm sm:text-base text-navy-600">Enter your grades below to instantly estimate your Pakistani equivalence.</p>
+    </header>
 
-            const resultForm = document.getElementById('resultForm');
-            const resultsTableBody = document.getElementById('resultsTableBody');
-            const noResultsMessage = document.getElementById('noResultsMessage');
-            const searchInput = document.getElementById('searchInput'); 
-            const subjectSelect = document.getElementById('subject');
-            const newSubjectInput = document.getElementById('newSubjectInput');
-            const addSubjectBtn = document.getElementById('addSubjectBtn');
-            const removeSubjectBtn = document.getElementById('removeSubjectBtn');
-            const subjectError = document.getElementById('subjectError');
-            const testTypeFilters = document.getElementById('testTypeFilters');
+    <section class="glass p-4 sm:p-6 md:p-8 fade-in" style="animation-delay: 0.1s;">
+      <form id="calcForm" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-b border-gray-300 pb-6">
+          <div>
+            <label for="examType" class="block mb-2 text-navy-900">Select Exam Type</label>
+            <select id="examType" class="w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+              <option value="o">O Level / IGCSE</option>
+              <option value="a">A Level</option>
+              <option value="both">Both O + A Levels</option>
+            </select>
+          </div>
+          <div>
+            <label for="mappingPreset" class="block mb-2 text-navy-900">Grade Mapping</label>
+            <select id="mappingPreset" class="w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+              <option value="default">Default (A*=90, A=85, B=75...)</option>
+              <option value="higher">Higher A* (A*=95, A=90...)</option>
+            </select>
+          </div>
+        </div>
 
-            let currentResults = [];
-            let subjects = [];
-            let currentFilter = 'All';
+        <div class="space-y-2">
+            <h3 class="text-lg font-bold text-navy-800 educational-header">Subjects</h3>
+            <div id="subjectsArea" class="space-y-3"></div>
+        </div>
 
-            // --- Data Persistence ---
-            const saveResultsToLocal = () => localStorage.setItem('studentResults', JSON.stringify(currentResults));
-            const loadResultsFromLocal = () => currentResults = JSON.parse(localStorage.getItem('studentResults')) || [];
-            const saveSubjectsToLocal = () => localStorage.setItem('studentSubjects', JSON.stringify(subjects));
-            const loadSubjectsFromLocal = () => {
-                subjects = JSON.parse(localStorage.getItem('studentSubjects')) || ["Physics", "Chemistry", "Maths", "English", "Biology"];
-                if (subjects.length === 0) subjects = ["Physics", "Chemistry", "Maths", "English", "Biology"];
-            };
+        <div class="flex flex-wrap gap-3 items-center justify-center sm:justify-start pt-4 border-t border-gray-300 mt-6">
+          <button id="addSubjectBtn" type="button" class="flex items-center gap-2 px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-800 transition-colors no-print">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Add Subject
+          </button>
+          <button id="calcBtn" type="button" class="flex items-center gap-2 px-5 py-2 bg-amber-600 text-white font-bold rounded-lg hover:bg-amber-700 transition-colors no-print">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+            Calculate Result
+          </button>
+          <button id="resetBtn" type="button" class="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors no-print">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v6h6"/><path d="M21 12A9 9 0 0 0 6 5.3L3 8"/><path d="M21 22v-6h-6"/><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"/></svg>
+            Reset
+          </button>
+        </div>
+      </form>
+    </section>
 
-            // --- Utilities ---
-            const showModal = (modalId) => document.getElementById(modalId).classList.add('active');
-            const hideModal = (modalId) => document.getElementById(modalId).classList.remove('active');
-            const calculateGrade = (p) => {
-                if (p >= 90) return 'A+'; if (p >= 80) return 'A'; if (p >= 70) return 'B';
-                if (p >= 60) return 'C'; if (p >= 50) return 'D'; return 'F';
-            };
-            const getRemarks = (grade) => {
-                const remarks = { 'A+': 'Outstanding Performance.', 'A': 'Excellent Work.', 'B': 'Good Effort.', 'C': 'Satisfactory.', 'D': 'Needs Improvement.', 'F': 'Requires Serious Attention.' };
-                return remarks[grade] || 'N/A';
-            };
-            const getFilteredResults = () => {
-                const searchTerm = searchInput.value.toLowerCase();
-                const filteredByType = currentFilter === 'All' ? currentResults : currentResults.filter(r => r.testType === currentFilter);
-                return filteredByType.filter(r => r.studentName.toLowerCase().includes(searchTerm));
-            };
+    <!-- Result Card -->
+    <section id="resultCard" class="glass p-4 sm:p-6 md:p-8 hidden slide-down">
+      <div class="print-header hidden">
+          <h2 class="text-2xl font-bold">Equivalence Calculation Report</h2>
+          <p class="text-sm">Generated on: <span id="printDate"></span></p>
+      </div>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+        <h2 class="text-xl sm:text-2xl font-bold text-navy-800 educational-header mb-2 sm:mb-0">Your Estimated Result</h2>
+        <button id="printBtn" class="flex items-center gap-2 px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white rounded-lg no-print self-end sm:self-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+          Print
+        </button>
+      </div>
 
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+        <div class="md:col-span-2 p-6 bg-navy-800 dark:bg-indigo-900 text-white rounded-lg flex flex-col items-center justify-center text-center">
+            <h3 class="text-lg font-semibold opacity-80 educational-header">Overall Percentage</h3>
+            <div id="summaryPercent" class="text-4xl sm:text-5xl font-extrabold my-2">0%</div>
+            <div id="summaryAdvice" class="mt-2 opacity-90 text-sm sm:text-base"></div>
+        </div>
 
-            // --- Rendering ---
-            const renderResults = () => {
-                resultsTableBody.innerHTML = '';
-                const displayResults = getFilteredResults();
-                const sorted = [...displayResults].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                sorted.forEach(data => {
-                    const row = resultsTableBody.insertRow();
-                    row.dataset.id = data.id;
-                    row.dataset.studentName = data.studentName.toLowerCase();
-                    const percentage = data.totalMarks > 0 ? ((data.score / data.totalMarks) * 100).toFixed(2) : 'N/A';
-                    row.innerHTML = `
-                        <td class="py-3 px-4 font-medium">${data.studentName}</td>
-                        <td class="py-3 px-4">${data.studentClass}</td>
-                        <td class="py-3 px-4">${data.degree}</td>
-                        <td class="py-3 px-4">${data.testType}</td>
-                        <td class="py-3 px-4">${data.subject}</td>
-                        <td class="py-3 px-4">${data.score} / ${data.totalMarks} (${percentage}%)</td>
-                        <td class="py-3 px-4">${new Date(data.resultDate).toLocaleDateString()}</td>
-                        <td class="py-3 px-4">
-                            <div class="flex items-center justify-center space-x-2">
-                                <button data-id="${data.id}" class="view-card-btn p-2 text-blue-600 hover:bg-blue-100 rounded-full transition"><i data-lucide="eye" class="w-5 h-5"></i></button>
-                                <button data-id="${data.id}" class="edit-btn p-2 text-yellow-600 hover:bg-yellow-100 rounded-full transition"><i data-lucide="pencil" class="w-5 h-5"></i></button>
-                                <button data-id="${data.id}" class="delete-btn p-2 text-red-600 hover:bg-red-100 rounded-full transition"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                            </div>
-                        </td>`;
-                });
-                lucide.createIcons();
-                noResultsMessage.classList.toggle('hidden', displayResults.length > 0);
-            };
+        <div class="md:col-span-3 p-4 sm:p-6 bg-white/80 dark:bg-slate-900/80 rounded-lg">
+            <h3 class="font-bold mb-3 text-navy-900 educational-header">Details</h3>
+            <div id="calculationDetails" class="text-sm text-gray-700 space-y-2"></div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Info Section -->
+    <section id="infoSection" class="glass p-4 sm:p-6 md:p-8 fade-in" style="animation-delay: 0.2s;">
+      <h2 class="text-xl sm:text-2xl font-bold text-navy-800 educational-header mb-4">About IBCC Equivalence</h2>
+      <div class="space-y-3 text-gray-700 dark:text-slate-300 text-sm sm:text-base">
+        <p>The <a href="https://ibcc.edu.pk/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">Inter Board Committee of Chairmen (IBCC)</a> is the sole authority in Pakistan for granting equivalence to foreign qualifications like O/A Levels, IGCSE, and IB.</p>
+        <p>This calculator provides an <strong class="text-navy-800 dark:text-indigo-300">unofficial estimate</strong> based on standard conversion formulas. The final marks and certificate are issued exclusively by the IBCC after a formal application process.</p>
+        <p><strong>Key Requirements for Equivalence:</strong></p>
+        <ul class="list-disc list-inside pl-4 space-y-1">
+          <li><strong>O-Level/IGCSE:</strong> A minimum of eight subjects, including compulsory subjects: English, Mathematics, Urdu, Islamiyat, and Pakistan Studies.</li>
+          <li><strong>A-Level:</strong> A minimum of three A-Level subjects.</li>
+        </ul>
+        <p>For official procedures and the latest updates, please visit the official IBCC website. The Karachi office is one of the main regional centers for processing applications.</p>
+      </div>
+    </section>
 
-            const populateSubjectDropdowns = () => {
-                const editSubjectEl = document.getElementById('editSubject');
-                [subjectSelect, editSubjectEl].forEach(selectEl => {
-                    if (!selectEl) return;
-                    selectEl.innerHTML = '<option value="" disabled selected>Select</option>';
-                    subjects.forEach(s => selectEl.innerHTML += `<option value="${s}">${s}</option>`);
-                });
-            };
+    <!-- FAQ Section -->
+    <section id="faqSection" class="glass p-4 sm:p-6 md:p-8 fade-in" style="animation-delay: 0.3s;">
+      <h2 class="text-xl sm:text-2xl font-bold text-navy-800 educational-header mb-4">Frequently Asked Questions</h2>
+      <div class="space-y-4 text-gray-700 dark:text-slate-300 text-sm sm:text-base">
+        <div>
+          <h3 class="font-semibold text-navy-900 dark:text-indigo-300">Why Is an O-Level Equivalence Certificate Important for Pakistani Students?</h3>
+          <p class="mt-2">An O-Level equivalence certificate is essential for students aiming to study in Pakistan because it standardizes their international qualifications. Without this document, universities and colleges in Pakistan cannot accurately compare O-Level results to local qualifications.</p>
+          <p class="mt-2">Here’s why this certificate matters:</p>
+          <ul class="list-disc list-inside pl-4 space-y-2 mt-2">
+            <li><strong>University Admissions:</strong> Most Pakistani universities require students with O-Level qualifications to provide an equivalence certificate as part of the admission process.</li>
+            <li><strong>Merit Lists:</strong> Equivalence marks are used to determine a student’s position on merit lists, ensuring a fair comparison with Matriculation students.</li>
+            <li><strong>Recognition of Credentials:</strong> It validates your O-Level education and ensures it is formally recognized within Pakistan’s education framework.</li>
+            <li><strong>Career Opportunities:</strong> Some professional programs or government jobs may require equivalence certificates to confirm that your academic background meets local standards.</li>
+          </ul>
+          <p class="mt-2">Obtaining this certificate not only streamlines your admission process but also ensures your O-Level education is fully recognized in Pakistan.</p>
+        </div>
+        <p class="pt-4 border-t border-gray-300 dark:border-indigo-800">For more information, visit our <a href="https://ibagrads.com/" target="_blank" rel="noopener noreferrer" class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">Website</a> or Facebook page.</p>
+      </div>
+    </section>
 
-            // --- Subject Management ---
-            addSubjectBtn.addEventListener('click', () => {
-                const newSubject = newSubjectInput.value.trim();
-                if (!newSubject || subjects.find(s => s.toLowerCase() === newSubject.toLowerCase())) {
-                    subjectError.textContent = newSubject ? "Subject already exists." : "Please enter a subject name.";
-                    subjectError.classList.remove('hidden');
-                    return;
-                }
-                subjects.push(newSubject);
-                saveSubjectsToLocal();
-                populateSubjectDropdowns();
-                newSubjectInput.value = '';
-                subjectError.classList.add('hidden');
-            });
+    <footer class="text-center text-sm text-gray-600 pb-6 fade-in" style="animation-delay: 0.4s;">
+      <div>O/A Level Equivalence Calculator | Developed in Karachi</div>
+      <div class="mt-1">Disclaimer: This is an estimation tool. The final and official equivalence is only provided by the IBCC.</div>
+      <div class="mt-2 text-xs text-gray-500">Last logic update: September 2025</div>
+    </footer>
+  </main>
 
-            removeSubjectBtn.addEventListener('click', () => {
-                const selected = subjectSelect.value;
-                if (!selected) {
-                    subjectError.textContent = "Please select a subject to remove.";
-                    subjectError.classList.remove('hidden');
-                    return;
-                }
-                subjects = subjects.filter(s => s !== selected);
-                saveSubjectsToLocal();
-                populateSubjectDropdowns();
-                subjectError.classList.add('hidden');
-            });
-            
-            // --- Add/Edit Result Forms ---
-            resultForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const newResult = {
-                    id: crypto.randomUUID(),
-                    studentName: document.getElementById('studentName').value.trim(),
-                    studentClass: document.getElementById('studentClass').value,
-                    degree: document.getElementById('degree').value,
-                    testType: document.getElementById('testType').value,
-                    subject: subjectSelect.value,
-                    topicName: document.getElementById('topicName').value.trim(),
-                    score: parseInt(document.getElementById('score').value, 10),
-                    totalMarks: parseInt(document.getElementById('totalMarks').value, 10),
-                    resultDate: document.getElementById('resultDate').value,
-                    timestamp: new Date().toISOString()
-                };
-                currentResults.push(newResult);
-                saveResultsToLocal();
-                renderResults();
-                resultForm.reset();
-                document.getElementById('studentClass').selectedIndex = 0;
-                document.getElementById('degree').selectedIndex = 0;
-                document.getElementById('testType').selectedIndex = 0;
-                subjectSelect.selectedIndex = 0;
-            });
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // --- DOM Elements ---
+      const subjectsArea = document.getElementById('subjectsArea');
+      const addSubjectBtn = document.getElementById('addSubjectBtn');
+      const mappingPreset = document.getElementById('mappingPreset');
+      const examType = document.getElementById('examType');
+      const calcBtn = document.getElementById('calcBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const resultCard = document.getElementById('resultCard');
+      const calculationDetails = document.getElementById('calculationDetails');
+      const summaryPercent = document.getElementById('summaryPercent');
+      const summaryAdvice = document.getElementById('summaryAdvice');
+      const printBtn = document.getElementById('printBtn');
+      const darkModeToggle = document.getElementById('darkModeToggle');
+      const sunIcon = document.getElementById('sunIcon');
+      const moonIcon = document.getElementById('moonIcon');
+      const htmlEl = document.documentElement;
+      const customModal = document.getElementById('customModal');
+      const modalMessage = document.getElementById('modalMessage');
+      const modalCloseBtn = document.getElementById('modalCloseBtn');
 
-            // --- Table Actions (View, Edit, Delete) ---
-            resultsTableBody.addEventListener('click', (e) => {
-                const btn = e.target.closest('button');
-                if (!btn) return;
-                const id = btn.dataset.id;
-                
-                if (btn.classList.contains('delete-btn')) {
-                    if (confirm("Kya aap is result ko delete karna chahte hain?")) {
-                        currentResults = currentResults.filter(r => r.id !== id);
-                        saveResultsToLocal();
-                        renderResults();
-                    }
-                } else if (btn.classList.contains('view-card-btn')) {
-                    const data = currentResults.find(r => r.id === id);
-                    if (data) showResultCard(data);
-                } else if (btn.classList.contains('edit-btn')) {
-                    const data = currentResults.find(r => r.id === id);
-                    if (data) showEditModal(data);
-                }
-            });
+      // --- Data and State ---
+      let subjectCounter = 0;
+      const gradeOptions = ["A*", "A", "B", "C", "D", "E", "U"];
+      const mappings = {
+        default: { "A*": 90, "A": 85, "B": 75, "C": 65, "D": 55, "E": 45, "U": 0 },
+        higher:  { "A*": 95, "A": 90, "B": 80, "C": 70, "D": 60, "E": 50, "U": 0 }
+      };
 
-            // --- Professional Result Card ---
-            const createProfessionalCardHTML = (data) => {
-                const percentage = data.totalMarks > 0 ? ((data.score / data.totalMarks) * 100).toFixed(2) : 0;
-                const grade = calculateGrade(percentage);
-                const issueDate = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-                return `
-                <div class="p-8 border-2 border-gray-800 bg-white relative">
-                    <div class="absolute inset-0 flex items-center justify-center z-0">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-200 opacity-50"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
-                    </div>
-                    <div class="relative z-10">
-                        <div class="flex items-center justify-between pb-4 border-b-2 border-gray-800">
-                            <div class="flex items-center gap-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
-                                <div>
-                                    <h3 class="text-xl font-bold text-gray-800">IBAGRADS XI-XII</h3>
-                                    <p class="text-sm font-medium text-gray-500">OFFICIAL RESULT CARD</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-x-8 gap-y-4 my-6 text-sm">
-                            <p class="col-span-2"><strong>Student Name:</strong> ${data.studentName}</p>
-                            <p><strong>Class:</strong> ${data.studentClass}</p>
-                            <p><strong>Degree Program:</strong> ${data.degree}</p>
-                             <p><strong>Test Type:</strong> ${data.testType}</p>
-                            <p><strong>Date of Issue:</strong> ${issueDate}</p>
-                            <p><strong>Result ID:</strong> ${data.id.substring(0, 8).toUpperCase()}</p>
-                        </div>
-                        <table class="w-full text-sm border-collapse">
-                            <thead class="bg-gray-100 text-gray-600">
-                                <tr>
-                                    <th class="border p-2 text-left">Subject</th>
-                                    <th class="border p-2 text-left">Topic</th>
-                                    <th class="border p-2 text-center">Score</th>
-                                    <th class="border p-2 text-center">Total Marks</th>
-                                    <th class="border p-2 text-center">Percentage</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="border p-2">${data.subject}</td>
-                                    <td class="border p-2">${data.topicName}</td>
-                                    <td class="border p-2 text-center">${data.score}</td>
-                                    <td class="border p-2 text-center">${data.totalMarks}</td>
-                                    <td class="border p-2 text-center font-semibold">${percentage}%</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="grid grid-cols-3 gap-4 mt-6 text-center bg-gray-50 p-4 rounded-lg">
-                            <div><p class="text-sm text-gray-600">Overall Percentage</p><p class="text-2xl font-bold text-blue-600">${percentage}%</p></div>
-                            <div><p class="text-sm text-gray-600">Grade</p><p class="text-2xl font-bold text-blue-600">${grade}</p></div>
-                            <div><p class="text-sm text-gray-600">Remarks</p><p class="text-lg font-semibold text-blue-600">${getRemarks(grade)}</p></div>
-                        </div>
-                        <div class="mt-12 pt-4 border-t text-center text-xs text-gray-500">
-                            <p>This is a computer-generated document. | IBAGRADS XI-XII, karachi sindh, Pakistan</p>
-                        </div>
-                    </div>
-                </div>`;
-            };
+      // --- Functions ---
+      function showModal(message) {
+        modalMessage.textContent = message;
+        customModal.classList.remove('modal-hidden', 'pointer-events-none');
+        document.body.style.overflow = 'hidden';
+      }
 
-            const showResultCard = (data) => {
-                const container = document.getElementById('cardModalContainer');
-                container.innerHTML = `
-                    <div id="printableCard">${createProfessionalCardHTML(data)}</div>
-                    <div class="flex justify-end space-x-2 mt-4">
-                        <button id="exportCardPdfBtn" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition">Export PDF</button>
-                        <button id="closeCardModalBtn" class="bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-400 transition">Band Karein</button>
-                    </div>`;
-                document.getElementById('closeCardModalBtn').onclick = () => hideModal('cardModal');
-                document.getElementById('exportCardPdfBtn').onclick = () => exportCardToPdf(document.getElementById('printableCard'), `${data.studentName}_result.pdf`);
-                showModal('cardModal');
-            };
+      function hideModal() {
+        customModal.classList.add('modal-hidden', 'pointer-events-none');
+        document.body.style.overflow = '';
+      }
 
-            // --- Edit Modal ---
-            const showEditModal = (data) => {
-                const container = document.getElementById('editModalContainer');
-                container.innerHTML = `
-                <h2 class="text-2xl font-semibold text-gray-700 mb-4">Result Edit Karein</h2>
-                <form id="editForm">
-                    <input type="hidden" id="editDocId" value="${data.id}">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label for="editStudentName" class="block text-sm font-medium">Naam</label><input type="text" id="editStudentName" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.studentName}" required></div>
-                        <div><label for="editStudentClass" class="block text-sm font-medium">Class</label><select id="editStudentClass" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required><option value="XI">XI</option><option value="XII">XII</option></select></div>
-                        <div><label for="editDegree" class="block text-sm font-medium">Degree</label><select id="editDegree" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required><option value="Pre Med">Pre-Medical</option><option value="Pre Eng">Pre-Engineering</option><option value="CS">Computer Science</option></select></div>
-                        <div>
-                            <label for="editTestType" class="block text-sm font-medium">Test Type</label>
-                            <select id="editTestType" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required>
-                                <option value="Weekly Test">Weekly Test</option>
-                                <option value="Monthly Test">Monthly Test</option>
-                                <option value="Yearly Test">Yearly Test</option>
-                            </select>
-                        </div>
-                        <div><label for="editSubject" class="block text-sm font-medium">Subject</label><select id="editSubject" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" required></select></div>
-                        <div><label for="editTopicName" class="block text-sm font-medium">Topic</label><input type="text" id="editTopicName" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.topicName}" required></div>
-                        <div><label for="editScore" class="block text-sm font-medium">Score</label><input type="number" id="editScore" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.score}" required></div>
-                        <div><label for="editTotalMarks" class="block text-sm font-medium">Total Marks</label><input type="number" id="editTotalMarks" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.totalMarks}" required></div>
-                        <div class="col-span-2"><label for="editResultDate" class="block text-sm font-medium">Date</label><input type="date" id="editResultDate" class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg" value="${data.resultDate}" required></div>
-                    </div>
-                    <div class="flex justify-end space-x-2 mt-6">
-                        <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Save Changes</button>
-                        <button type="button" id="closeEditModalBtn" class="bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-400">Cancel</button>
-                    </div>
-                </form>`;
+      function addSubjectRow(data = {}) {
+        subjectCounter++;
+        const row = document.createElement('div');
+        row.className = 'grid grid-cols-12 gap-2 items-end subject-row fade-in';
+        row.innerHTML = `
+          <div class="col-span-12 md:col-span-6">
+            <label class="text-xs sm:text-sm font-medium text-gray-700">Subject ${subjectCounter}</label>
+            <input type="text" placeholder="e.g., Physics" value="${data.name || ''}" class="mt-1 w-full rounded-md border-gray-300 px-3 py-2 subjectName" />
+          </div>
+          <div class="col-span-6 md:col-span-3">
+            <label class="text-xs sm:text-sm font-medium text-gray-700">Grade</label>
+            <select class="mt-1 w-full rounded-md border-gray-300 px-3 py-2 gradeSelect">
+              ${gradeOptions.map(g => `<option value="${g}" ${data.grade === g ? 'selected' : ''}>${g}</option>`).join('')}
+            </select>
+          </div>
+          <div class="col-span-6 md:col-span-2">
+            <label class="text-xs sm:text-sm font-medium text-gray-700">Weight</label>
+            <input type="number" min="0.5" step="0.5" value="${data.weight || 1}" class="mt-1 w-full rounded-md border-gray-300 px-3 py-2 weightInput" />
+          </div>
+          <div class="col-span-12 md:col-span-1 flex justify-end">
+            <button type="button" title="Remove Subject" class="remove-btn w-full md:w-10 h-10 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center justify-center font-bold no-print">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+        `;
+        subjectsArea.appendChild(row);
+      }
 
-                populateSubjectDropdowns(); // Populate subjects in edit form
-                document.getElementById('editStudentClass').value = data.studentClass;
-                document.getElementById('editDegree').value = data.degree;
-                document.getElementById('editTestType').value = data.testType;
-                document.getElementById('editSubject').value = data.subject;
-                
-                document.getElementById('closeEditModalBtn').onclick = () => hideModal('editModal');
-                document.getElementById('editForm').onsubmit = (e) => {
-                    e.preventDefault();
-                    const id = document.getElementById('editDocId').value;
-                    const index = currentResults.findIndex(r => r.id === id);
-                    if (index > -1) {
-                        currentResults[index] = { ...currentResults[index],
-                            studentName: document.getElementById('editStudentName').value,
-                            studentClass: document.getElementById('editStudentClass').value,
-                            degree: document.getElementById('editDegree').value,
-                            testType: document.getElementById('editTestType').value,
-                            subject: document.getElementById('editSubject').value,
-                            topicName: document.getElementById('editTopicName').value,
-                            score: parseInt(document.getElementById('editScore').value, 10),
-                            totalMarks: parseInt(document.getElementById('editTotalMarks').value, 10),
-                            resultDate: document.getElementById('editResultDate').value,
-                        };
-                        saveResultsToLocal();
-                        renderResults();
-                        hideModal('editModal');
-                    }
-                };
-                showModal('editModal');
-            };
+      function calculateAndShowResults() {
+        const subjectRows = document.querySelectorAll('.subject-row');
+        if (subjectRows.length === 0) {
+          showModal('Please add at least one subject to calculate.');
+          return;
+        }
 
-            // --- Final Results Modal ---
-            document.getElementById('showFinalResultBtn').addEventListener('click', () => {
-                const container = document.getElementById('finalResultModalContainer');
-                container.innerHTML = `
-                    <div id="printableFinalResults">
-                        <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
-                             <h2 class="text-2xl font-semibold text-gray-700">Final Consolidated Results</h2>
-                             <div id="finalResultFilters" class="flex justify-start space-x-2">
-                                <button data-filter="XI" class="filter-btn bg-gray-500 text-white font-semibold py-1 px-3 rounded-lg hover:bg-gray-600 transition">XI</button>
-                                <button data-filter="XII" class="filter-btn bg-gray-500 text-white font-semibold py-1 px-3 rounded-lg hover:bg-gray-600 transition">XII</button>
-                                <button data-filter="All" class="filter-btn bg-blue-500 text-white font-semibold py-1 px-3 rounded-lg hover:bg-blue-600 transition">All</button>
-                            </div>
-                        </div>
-                        <div class="overflow-x-auto"><table id="finalResultTable" class="min-w-full bg-white rounded-lg shadow-md overflow-hidden"><thead class="bg-gray-100">...</thead><tbody class="divide-y"></tbody></table></div>
-                    </div>
-                    <div class="flex justify-end space-x-2 mt-6">
-                        <button id="exportFinalResultPdfBtn" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700">Export PDF</button>
-                        <button id="closeFinalResultModalBtn" class="bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-400">Band Karein</button>
-                    </div>`;
+        const preset = mappingPreset.value || 'default';
+        const currentMap = mappings[preset];
 
-                const table = container.querySelector('#finalResultTable');
-                table.querySelector('thead').innerHTML = `<tr>
-                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Student</th>
-                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Class</th>
-                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Degree</th>
-                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tests Attempted</th>
-                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Score</th>
-                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Total Marks</th>
-                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Percentage</th>
-                    <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Grade</th></tr>`;
+        let totalWeight = 0;
+        let weightedSum = 0;
+        let detailLines = [];
 
-                const renderFinalTable = (filter = 'All') => {
-                    const summaries = {};
-                    const filtered = currentResults.filter(r => filter === 'All' || r.studentClass === filter);
-                    filtered.forEach(r => {
-                        const key = `${r.studentName}-${r.studentClass}-${r.degree}`;
-                        if (!summaries[key]) {
-                            summaries[key] = { name: r.studentName, class: r.studentClass, degree: r.degree, totalScore: 0, totalMarks: 0, testsAttempted: 0 };
-                        }
-                        summaries[key].totalScore += r.score;
-                        summaries[key].totalMarks += r.totalMarks;
-                        summaries[key].testsAttempted += 1;
-                    });
-                    
-                    const tbody = table.querySelector('tbody');
-                    tbody.innerHTML = '';
-                    Object.values(summaries).forEach(s => {
-                        const p = s.totalMarks > 0 ? (s.totalScore / s.totalMarks * 100).toFixed(2) : 0;
-                        const g = calculateGrade(p);
-                        tbody.innerHTML += `<tr>
-                            <td class="p-3">${s.name}</td>
-                            <td class="p-3">${s.class}</td>
-                            <td class="p-3">${s.degree}</td>
-                            <td class="p-3">${s.testsAttempted}</td>
-                            <td class="p-3">${s.totalScore}</td>
-                            <td class="p-3">${s.totalMarks}</td>
-                            <td class="p-3 font-semibold">${p}%</td>
-                            <td class="p-3 font-bold">${g}</td></tr>`;
-                    });
-                };
+        subjectRows.forEach((row, i) => {
+          const grade = row.querySelector('.gradeSelect').value;
+          const weight = parseFloat(row.querySelector('.weightInput').value) || 1;
+          const subjName = row.querySelector('.subjectName').value || `Subject ${i + 1}`;
+          const points = currentMap[grade] !== undefined ? currentMap[grade] : 0;
+          
+          totalWeight += weight;
+          weightedSum += points * weight;
 
-                container.querySelector('#finalResultFilters').onclick = (e) => {
-                    if (e.target.matches('.filter-btn')) {
-                        const filter = e.target.dataset.filter;
-                        renderFinalTable(filter);
-                        container.querySelectorAll('.filter-btn').forEach(b => b.classList.replace('bg-blue-500', 'bg-gray-500'));
-                        e.target.classList.replace('bg-gray-500', 'bg-blue-500');
-                    }
-                };
-
-                document.getElementById('closeFinalResultModalBtn').onclick = () => hideModal('finalResultModal');
-                document.getElementById('exportFinalResultPdfBtn').onclick = () => exportTableToPdf(document.getElementById('printableFinalResults'), 'final_results.pdf', 'Final Consolidated Results');
-                
-                renderFinalTable();
-                showModal('finalResultModal');
-            });
-            
-            // --- Single Card PDF Export (Fit to page) ---
-            const exportCardToPdf = (element, filename) => {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
-
-                html2canvas(element, { scale: 3, useCORS: true }).then(canvas => { // Increased scale for better quality
-                    const imgData = canvas.toDataURL('image/png');
-                    const imgProps = doc.getImageProperties(imgData);
-                    
-                    const pdfWidth = doc.internal.pageSize.getWidth();
-                    const pdfHeight = doc.internal.pageSize.getHeight();
-                    
-                    const margin = 15; // 15mm margin on all sides
-                    
-                    const availableWidth = pdfWidth - (margin * 2);
-                    const availableHeight = pdfHeight - (margin * 2);
-                    
-                    const imgAspectRatio = imgProps.width / imgProps.height;
-                    
-                    let finalImgWidth, finalImgHeight;
-
-                    // Calculate final dimensions to fit within the available space while maintaining aspect ratio
-                    if (imgAspectRatio > (availableWidth / availableHeight)) {
-                        finalImgWidth = availableWidth;
-                        finalImgHeight = finalImgWidth / imgAspectRatio;
-                    } else {
-                        finalImgHeight = availableHeight;
-                        finalImgWidth = finalImgHeight * imgAspectRatio;
-                    }
-
-                    // Center the image
-                    const x = margin + (availableWidth - finalImgWidth) / 2;
-                    const y = margin + (availableHeight - finalImgHeight) / 2;
-
-                    doc.addImage(imgData, 'PNG', x, y, finalImgWidth, finalImgHeight);
-                    doc.save(filename);
-                }).catch(e => console.error("Error creating card PDF:", e));
-            };
-            
-            // --- Multi-page Table PDF Export ---
-            const exportTableToPdf = async (element, filename, title = 'Student Results') => {
-                 const { jsPDF } = window.jspdf;
-                 const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-                
-                 html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
-                     const imgData = canvas.toDataURL('image/png');
-                     const contentWidth = 267; // A4 landscape width (297) - margins (15*2)
-                     const pageHeight = 180; // A4 landscape height (210) - margins for header/footer
-                     const imgHeight = canvas.height * contentWidth / canvas.width;
-                     let heightLeft = imgHeight;
-                     let position = 30; // Initial y position
-
-                     const addHeadersAndFooters = () => {
-                        for (let i = 1; i <= doc.internal.getNumberOfPages(); i++) {
-                            doc.setPage(i);
-                            // Header
-                            doc.setFontSize(18);
-                            doc.setFont('helvetica', 'bold');
-                            doc.text('IBAGRADS XI-XII', 15, 15);
-                            doc.setFontSize(12);
-                            doc.setFont('helvetica', 'normal');
-                            doc.text(title, 15, 22);
-                            doc.setLineWidth(0.5);
-                            doc.line(15, 25, 282, 25);
-                            // Footer
-                            doc.setFontSize(8);
-                            doc.text(`Generated on: ${new Date().toLocaleString()}`, 15, 200);
-                            doc.text(`Page ${i} of ${doc.internal.getNumberOfPages()}`, 260, 200);
-                        }
-                     };
-
-                     doc.addImage(imgData, 'PNG', 15, position, contentWidth, imgHeight);
-                     heightLeft -= pageHeight;
-
-                     while (heightLeft > 0) {
-                        position = position - 180; // Move up for the next slice
-                        doc.addPage();
-                        doc.addImage(imgData, 'PNG', 15, position, contentWidth, imgHeight);
-                        heightLeft -= pageHeight;
-                     }
-                     
-                     addHeadersAndFooters();
-                     doc.save(filename);
-                 }).catch(e => console.error("Error creating PDF:", e));
-            };
-            
-            // --- Excel Export ---
-            document.getElementById('exportExcelBtn').addEventListener('click', () => {
-                const resultsToExport = getFilteredResults();
-                let csv = 'Student Naam,Class,Degree,Test Type,Subject,Topic,Score,Total Marks,Percentage,Date\n';
-                resultsToExport.forEach(r => {
-                    const p = r.totalMarks > 0 ? (r.score / r.totalMarks * 100).toFixed(2) : 'N/A';
-                    csv += `"${r.studentName}","${r.studentClass}","${r.degree}","${r.testType}","${r.subject}","${r.topicName}","${r.score}","${r.totalMarks}","${p}%","${r.resultDate}"\n`;
-                });
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = `student_results_${currentFilter}.csv`;
-                link.click();
-            });
-
-            // Main table PDF export
-            document.getElementById('exportPdfBtn').addEventListener('click', () => {
-                const tempTable = document.createElement('table');
-                tempTable.className = 'min-w-full bg-white';
-                tempTable.innerHTML = document.getElementById('resultsTable').innerHTML;
-                tempTable.querySelector('tbody').innerHTML = ''; // Clear body
-
-                const resultsToExport = getFilteredResults();
-                resultsToExport.forEach(data => {
-                     const percentage = data.totalMarks > 0 ? ((data.score / data.totalMarks) * 100).toFixed(2) : 'N/A';
-                     tempTable.querySelector('tbody').innerHTML += `
-                        <tr class="border-b"><td class="py-2 px-3">${data.studentName}</td><td class="py-2 px-3">${data.studentClass}</td>
-                        <td class="py-2 px-3">${data.degree}</td><td class="py-2 px-3">${data.testType}</td>
-                        <td class="py-2 px-3">${data.subject}</td><td class="py-2 px-3">${data.score}/${data.totalMarks}</td>
-                        <td class="py-2 px-3">${new Date(data.resultDate).toLocaleDateString()}</td><td></td></tr>`;
-                });
-                document.body.appendChild(tempTable); // Must be in DOM for html2canvas
-                exportTableToPdf(tempTable, `results_${currentFilter}.pdf`, `Uploaded Results (${currentFilter})`);
-                document.body.removeChild(tempTable);
-            });
-
-
-            // --- Search and Filter ---
-            searchInput.addEventListener('keyup', renderResults);
-            testTypeFilters.addEventListener('click', (e) => {
-                const btn = e.target.closest('.filter-btn');
-                if (!btn) return;
-                currentFilter = btn.dataset.filter;
-                
-                // Update button styles
-                testTypeFilters.querySelectorAll('.filter-btn').forEach(b => {
-                    b.classList.remove('bg-blue-500', 'text-white');
-                    b.classList.add('bg-gray-200', 'text-gray-700');
-                });
-                btn.classList.add('bg-blue-500', 'text-white');
-                btn.classList.remove('bg-gray-200', 'text-gray-700');
-
-                renderResults();
-            });
-
-            // --- Initial Load ---
-            loadSubjectsFromLocal();
-            loadResultsFromLocal();
-            populateSubjectDropdowns();
-            renderResults();
+          detailLines.push({ subj: subjName, grade, weight, points });
         });
-    </script>
+
+        if (totalWeight <= 0) {
+          showModal('The total weight of subjects must be greater than zero.');
+          return;
+        }
+
+        const avgPercent = weightedSum / totalWeight;
+        const avgRounded = avgPercent.toFixed(2);
+
+        calculationDetails.innerHTML = detailLines.map(d => `
+          <div class="flex flex-wrap justify-between items-center border-b border-gray-200 dark:border-indigo-800 py-1">
+            <span class="mr-2"><strong>${d.subj}</strong> (Grade: ${d.grade}, W: ${d.weight})</span>
+            <span class="font-semibold text-indigo-700 dark:text-indigo-300">${d.points} Points</span>
+          </div>
+        `).join('') + `<div class="flex justify-between items-center pt-2 font-bold text-md"><span>Total Average:</span><span>${avgRounded}%</span></div>`;
+
+        summaryPercent.textContent = `${avgRounded}%`;
+        
+        let suggestedEquivalence = '';
+        const level = examType.value;
+        if (level === 'o') {
+            suggestedEquivalence = getEquivalenceMessage('Matric', avgRounded);
+        } else if (level === 'a') {
+            suggestedEquivalence = getEquivalenceMessage('Intermediate', avgRounded);
+        } else {
+            suggestedEquivalence = `A combined O+A Level calculation.`;
+        }
+        summaryAdvice.innerHTML = suggestedEquivalence;
+
+        resultCard.classList.remove('hidden');
+        resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        saveState();
+      }
+
+      function getEquivalenceMessage(level, percent) {
+        let remark = '';
+        if (percent >= 85) remark = 'A+ Grade / Outstanding';
+        else if (percent >= 75) remark = 'A Grade / Excellent';
+        else if (percent >= 60) remark = 'B Grade / Very Good';
+        else if (percent >= 50) remark = 'C Grade / Good';
+        else if (percent >= 40) remark = 'D Grade / Satisfactory';
+        else remark = 'Needs Improvement';
+        return `<strong>Equivalent to ${level}:</strong> ${remark}`;
+      }
+
+      function addDefaultSubjects() {
+        const defaultSubjects = [
+            { name: 'English Language', grade: 'A', weight: '1' },
+            { name: 'Mathematics', grade: 'A', weight: '1' },
+            { name: 'Pakistan Studies', grade: 'A', weight: '1' },
+            { name: 'Islamiyat', grade: 'A', weight: '1' },
+            { name: 'Urdu', grade: 'B', weight: '1' }
+        ];
+        defaultSubjects.forEach(addSubjectRow);
+      }
+
+      function resetForm() {
+        subjectsArea.innerHTML = '';
+        subjectCounter = 0;
+        addDefaultSubjects();
+        
+        mappingPreset.value = 'default';
+        examType.value = 'o';
+        resultCard.classList.add('hidden');
+        localStorage.removeItem('equivalenceCalculatorState');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function saveState() {
+        const subjectRows = document.querySelectorAll('.subject-row');
+        const subjectsData = Array.from(subjectRows).map(row => ({
+            name: row.querySelector('.subjectName').value,
+            grade: row.querySelector('.gradeSelect').value,
+            weight: row.querySelector('.weightInput').value,
+        }));
+        
+        const state = {
+            subjects: subjectsData,
+            examType: examType.value,
+            mappingPreset: mappingPreset.value,
+        };
+        localStorage.setItem('equivalenceCalculatorState', JSON.stringify(state));
+      }
+
+      function loadState() {
+        const savedState = localStorage.getItem('equivalenceCalculatorState');
+        if (savedState) {
+          const state = JSON.parse(savedState);
+          examType.value = state.examType || 'o';
+          mappingPreset.value = state.mappingPreset || 'default';
+          subjectsArea.innerHTML = '';
+          subjectCounter = 0;
+          if (state.subjects && state.subjects.length > 0) {
+            state.subjects.forEach(addSubjectRow);
+          } else {
+            addDefaultSubjects();
+          }
+        } else {
+          addDefaultSubjects();
+        }
+      }
+
+      function applyTheme(theme) {
+          if (theme === 'dark') {
+              htmlEl.classList.add('dark');
+              moonIcon.classList.remove('hidden');
+              sunIcon.classList.add('hidden');
+          } else {
+              htmlEl.classList.remove('dark');
+              sunIcon.classList.remove('hidden');
+              moonIcon.classList.add('hidden');
+          }
+      }
+
+      // --- Event Listeners ---
+      addSubjectBtn.addEventListener('click', () => { addSubjectRow(); saveState(); });
+      subjectsArea.addEventListener('click', (e) => {
+        const removeBtn = e.target.closest('.remove-btn');
+        if (removeBtn) {
+          if (subjectsArea.childElementCount > 1) {
+            removeBtn.closest('.subject-row').remove();
+            saveState();
+          } else {
+            showModal('At least one subject is required.');
+          }
+        }
+      });
+      examType.addEventListener('change', saveState);
+      mappingPreset.addEventListener('change', saveState);
+      subjectsArea.addEventListener('input', saveState);
+      calcBtn.addEventListener('click', calculateAndShowResults);
+      resetBtn.addEventListener('click', resetForm);
+      printBtn.addEventListener('click', () => {
+          document.getElementById('printDate').textContent = new Date().toLocaleString();
+          window.print();
+      });
+      modalCloseBtn.addEventListener('click', hideModal);
+      customModal.addEventListener('click', (e) => { if (e.target === customModal) hideModal(); });
+      darkModeToggle.addEventListener('click', () => {
+          const currentTheme = htmlEl.classList.contains('dark') ? 'light' : 'dark';
+          localStorage.setItem('theme', currentTheme);
+          applyTheme(currentTheme);
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !customModal.classList.contains('modal-hidden')) {
+            hideModal();
+        } else if (e.key === 'Enter' && document.activeElement.tagName !== 'TEXTAREA' && !document.activeElement.closest('.remove-btn')) {
+          e.preventDefault();
+          calcBtn.click();
+        }
+      });
+
+      // --- Initialisation ---
+      const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      applyTheme(savedTheme);
+      loadState();
+    });
+  </script>
 </body>
 </html>
+
+
 
